@@ -82,6 +82,8 @@ export default class TextDrawable extends PureComponent<Props, State> {
           x={x}
           alignmentBaseline="hanging"
           y={y}
+          fontFamily="Arial, Helvetica, sans-serif"
+          fontSize="16px"
           onClick={this.handleClick}
           pointerEvents="visible-painted"
           style={{ cursor: canSelectDrawable ? 'pointer' : undefined }}
