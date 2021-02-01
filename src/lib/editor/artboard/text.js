@@ -4,15 +4,17 @@ import type { Drawable } from '../drawables';
 import ArtboardBase from './base';
 
 type Props ={
+  drawingFill: string,
   drawingStroke: string,
   drawingStrokeWidth: number,
-  children: Node,
+  text: $ReadOnlyArray<string>,
   width: number,
   height: number,
   onDrawEnd: (drawable: Drawable) => void,
   onDrawStart: () => void,
   minWidth: number,
   minHeight: number,
+  children?: Node,
 };
 
 type Coords = { x: number, y: number };
@@ -22,15 +24,15 @@ type State = {
   currentCoord?: Coords | null,
 };
 
-export default class ArtboardRect extends PureComponent<Props, State> {
+export default class ArtboardText extends PureComponent<Props, State> {
   constructor(props) {
     super(props);
     this.state = {};
   }
 
-  getLinePoints = ({ startCoord, currentCoord }: {
-    startCoord?: Coords | null,
-    currentCoord?: Coords | null,
+  getTextBounds = ({ startCoord, currentCoord }: {
+    startCoord: ?Coords,
+    currentCoord: ?Coords,
   }) => {
     if (!startCoord || !currentCoord) {
       return null;
@@ -49,10 +51,8 @@ export default class ArtboardRect extends PureComponent<Props, State> {
     }
 
     return {
-      x1: startCoord.x,
-      y1: startCoord.y,
-      x2: currentCoord.x,
-      y2: currentCoord.y,
+      x: lowerX,
+      y: lowerY,
     };
   }
 
@@ -74,14 +74,16 @@ export default class ArtboardRect extends PureComponent<Props, State> {
   }) => {
     this.setState({ startCoord: start, currentCoord: current });
 
-    const linePoints = this.getLinePoints({ startCoord: start, currentCoord: current });
+    const textBounds = this.getTextBounds({ startCoord: start, currentCoord: current });
 
-    if (linePoints) {
+    if (textBounds) {
       const id = String(Date.now());
       this.props.onDrawEnd({
-        type: 'line',
+        type: 'text',
         id,
-        ...linePoints,
+        ...textBounds,
+        text: this.props.text,
+        fill: this.props.drawingFill,
         stroke: this.props.drawingStroke,
         strokeWidth: this.props.drawingStrokeWidth,
       });
@@ -93,12 +95,12 @@ export default class ArtboardRect extends PureComponent<Props, State> {
     const {
       width,
       height,
-      drawingStroke,
-      drawingStrokeWidth,
+      drawingFill,
       children,
+      text,
     } = this.props;
 
-    const points = this.getLinePoints(this.state);
+    const textBounds = this.getTextBounds(this.state);
 
     return (
       <ArtboardBase
@@ -109,12 +111,14 @@ export default class ArtboardRect extends PureComponent<Props, State> {
         height={height}
       >
         {children}
-        {points && (
-          <line
-            {...points}
-            stroke={drawingStroke}
-            strokeWidth={drawingStrokeWidth}
-          />
+        {textBounds && (
+          <text
+            {...textBounds}
+            alignmentBaseline="hanging"
+            fill={drawingFill}
+          >
+            {text}
+          </text>
         )}
       </ArtboardBase>
     );

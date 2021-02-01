@@ -5,6 +5,7 @@ import ArtboardRect from './rect';
 import ArtboardEllipse from './ellipse';
 import ArtboardLine from './line';
 import ArtboardCrop from './crop';
+import ArtboardText from './text';
 
 type Props = {
   drawMode: null | 'pen' | 'rect' | 'ellipse' | 'line' | 'crop',
@@ -27,6 +28,9 @@ const ArtboardComponent = (props: Props) => {
     case 'rect':
       Artboard = ArtboardRect;
       break;
+    case 'text':
+      Artboard = ArtboardText;
+      break;
     case 'ellipse':
       Artboard = ArtboardEllipse;
       break;
@@ -43,7 +47,7 @@ const ArtboardComponent = (props: Props) => {
   }
 
   if (!Artboard) {
-    return <Fragment>{props.children}</Fragment>;
+    return <>{props.children}</>;
   }
 
   return (

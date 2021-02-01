@@ -202,7 +202,6 @@ export default class Cropables extends PureComponent<Props> {
       );
     };
 
-
     const { onResizeCropEnd } = this.props;
 
     const mouseUpHandler = (e3: MouseEvent) => {

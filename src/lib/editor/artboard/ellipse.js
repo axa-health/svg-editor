@@ -24,7 +24,10 @@ type State = {
 };
 
 export default class ArtboardEllipse extends PureComponent<Props, State> {
-  state = {};
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
 
   getEllipseBounds = () => {
     const { startCoord, currentCoord } = this.state;

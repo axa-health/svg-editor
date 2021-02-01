@@ -44,10 +44,6 @@ function inverseDirection(
 }
 
 export default class DragIndicator extends PureComponent<Props> {
-  static defaultProps = {
-    animation: true,
-  };
-
   makeDiStyles = memoize((selected: boolean, strokeWidth: number, animation?: boolean) => ({
     pointerEvents: 'bounding-box',
     fill: 'transparent',
@@ -152,3 +148,7 @@ export default class DragIndicator extends PureComponent<Props> {
     );
   }
 }
+
+DragIndicator.defaultProps = {
+  animation: true,
+};

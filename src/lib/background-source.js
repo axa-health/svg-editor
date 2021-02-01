@@ -22,7 +22,7 @@ type Props = {|
   source: Source,
   hqPdf?: boolean,
   children: RenderPropFunc,
-  fetcher: (url: string) => Promise<Blob>,
+  fetcher?: (url: string) => Promise<Blob>,
   pdfjs?: () => Promise<any>,
 |};
 
@@ -31,16 +31,20 @@ type State = {
 };
 
 function defaultFetcher(url: string): Promise<Blob> {
-  return fetch(url).then(res => res.blob());
+  return fetch(url).then((res) => res.blob());
 }
 
 export default class GenericBackgroundSource extends PureComponent<Props, State> {
-  state = {
-    source: { state: 'LOADING' },
-  };
-
+  // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
     fetcher: defaultFetcher,
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      source: { state: 'LOADING' },
+    };
   }
 
   componentDidMount() {
@@ -208,13 +212,12 @@ export default class GenericBackgroundSource extends PureComponent<Props, State>
     if (!this.props.pdfjs) {
       return Promise.reject(new Error('Missing pdfjs prop in BackgroundSource'));
     }
-
     return this.props.pdfjs()
-        .then(pdfJs => pdfJs.getDocument(URL.createObjectURL(blob)).promise
+      .then((pdfJs) => pdfJs.getDocument(URL.createObjectURL(blob)).promise
         // TODO: validate that there is only one page...
-        .then(doc => doc.getPage(1))
+        .then((doc) => doc.getPage(1))
         .then((page) => {
-          const viewport = page.getViewport({ scale: zoom, roation: 0});
+          const viewport = page.getViewport({ scale: zoom, roation: 0 });
 
           const canvas = document.createElement('canvas');
           const context = canvas.getContext('2d');
@@ -234,7 +237,7 @@ export default class GenericBackgroundSource extends PureComponent<Props, State>
               const width = viewport.width / zoom;
 
               if (canvas.toBlob) {
-                return new Promise(res => canvas.toBlob(res))
+                return new Promise((res) => canvas.toBlob(res))
                   .then((b) => {
                     png = (URL || window.webkitURL).createObjectURL(b);
                     return { png, width, height };

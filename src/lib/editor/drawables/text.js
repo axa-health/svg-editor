@@ -4,17 +4,41 @@ import DragIndicator from './drag-indicator';
 
 type Props = {|
   id: string,
-  points: Array<{ x: number, y: number }>,
-  stroke: string,
-  strokeWidth: number,
+  text: $ReadOnlyArray<string>,
+  x: number,
+  y: number,
   selected: boolean,
+  strokeWidth: number,
   onSelect: (e: MouseEvent, id: string) => void,
   onDragIndicatorMouseDown: (e: MouseEvent, id: string) => void,
   dragIndicatorStrokeWidth: number,
   canSelectDrawable: boolean,
 |};
 
-export default class PathDrawable extends PureComponent<Props> {
+type State = {
+  height: number,
+  width: number,
+}
+
+export default class TextDrawable extends PureComponent<Props, State> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      height: 0,
+      width: 0,
+    };
+    this.textRef = React.createRef();
+  }
+
+  componentDidMount() {
+    if (this.textRef.current) {
+      this.setState({
+        width: this.textRef.current.getBBox().width,
+        height: this.textRef.current.getBBox().height,
+      });
+    }
+  }
+
   handleClick = (e: MouseEvent) => {
     this.props.onSelect(e, this.props.id);
   };
@@ -26,42 +50,46 @@ export default class PathDrawable extends PureComponent<Props> {
   render() {
     const {
       id,
-      points,
-      stroke,
-      strokeWidth,
+      text,
+      x,
+      y,
       selected,
+      strokeWidth,
       dragIndicatorStrokeWidth: diStrokeWidth,
       canSelectDrawable,
     } = this.props;
 
-    // guard against corrupt data
-    if (points.length === 0) {
+    const {
+      height,
+      width,
+    } = this.state;
+
+    if (!text.length) {
       return null;
     }
 
     const strokeWidthHalf = strokeWidth / 2;
 
-    const lowestX = points.reduce((accum, p) => Math.min(p.x, accum), Number.MAX_SAFE_INTEGER);
-    const lowestY = points.reduce((accum, p) => Math.min(p.y, accum), Number.MAX_SAFE_INTEGER);
-    const highestX = points.reduce((accum, p) => Math.max(p.x, accum), 0);
-    const highestY = points.reduce((accum, p) => Math.max(p.y, accum), 0);
-
-    const diX = lowestX - strokeWidthHalf;
-    const diY = lowestY - strokeWidthHalf;
-    const diWidth = highestX - lowestX + strokeWidth;
-    const diHeight = highestY - lowestY + strokeWidth;
+    const diX = x - strokeWidthHalf;
+    const diY = y - strokeWidthHalf;
+    const diWidth = width + strokeWidth;
+    const diHeight = height + strokeWidth;
 
     return (
       <g>
-        <path
-          d={`M ${points.map((p) => `${p.x} ${p.y}`).join('L')}`}
-          fill="none"
-          strokeWidth={strokeWidth}
-          stroke={stroke}
+        <text
+          ref={this.textRef}
+          x={x}
+          alignmentBaseline="hanging"
+          y={y}
           onClick={this.handleClick}
           pointerEvents="visible-painted"
           style={{ cursor: canSelectDrawable ? 'pointer' : undefined }}
-        />
+        >
+          {text.map((line) => (
+            <tspan x={x} dy={16}>{line}</tspan>
+          ))}
+        </text>
         {selected && (
           <DragIndicator
             id={id}

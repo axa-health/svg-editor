@@ -18,7 +18,10 @@ type State = {
 };
 
 export default class ArtboardPen extends PureComponent<Props, State> {
-  state = {};
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
 
   onMouseDown = ({ start }: { start: { x: number, y: number } }) => {
     this.props.onDrawStart();
@@ -81,7 +84,7 @@ export default class ArtboardPen extends PureComponent<Props, State> {
         {drawingPoints && (
           <path
             key="path"
-            d={`M ${drawingPoints.map(p => p && `${p.x} ${p.y}`).join('L')}`}
+            d={`M ${drawingPoints.map((p) => p && `${p.x} ${p.y}`).join('L')}`}
             fill="none"
             strokeWidth={drawingStrokeWidth}
             stroke={drawingStroke}

@@ -7,6 +7,7 @@ import DragIcon from '@material-ui/icons/OpenWith';
 import RectIcon from '@material-ui/icons/CropLandscape';
 import EllipseIcon from '@material-ui/icons/PanoramaFishEye';
 import LineIcon from '@material-ui/icons/Remove';
+import TextIcon from '@material-ui/icons/FormatColorText';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import RotateRightIcon from '@material-ui/icons/RotateRight';
 import { CompactPicker } from 'react-color';
@@ -90,18 +91,22 @@ const colors = [
 ];
 
 export default class App extends PureComponent<{}, State> {
-  state = {
-    drawMode: null,
-    rotation: 0,
-    strokeColorPickerOpen: false,
-    strokeColor: '#00005b',
-    strokeWidth: 10,
-    fillColorPickerOpen: false,
-    fillColor: '#00008f',
-    drawables: [],
-    selectedDrawable: null,
-    crop: null,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      drawMode: null,
+      rotation: 0,
+      strokeColorPickerOpen: false,
+      strokeColor: '#00005b',
+      strokeWidth: 10,
+      fillColorPickerOpen: false,
+      fillColor: '#00008f',
+      drawables: [],
+      selectedDrawable: null,
+      crop: null,
+      text: ['Hans Muster', 'Musterstrasse 18', '8400 Winterthur'],
+    };
+  }
 
   renderLoading = () => (
     <div>renderLoading</div>
@@ -132,6 +137,10 @@ export default class App extends PureComponent<{}, State> {
     });
   }
 
+  handleTextChange = (e: any) => {
+    this.setState({ text: e.target.value });
+  }
+
   handleFillColorChange = (e: any) => {
     this.setState({ fillColor: e.hex });
   }
@@ -141,11 +150,11 @@ export default class App extends PureComponent<{}, State> {
   }
 
   toggleFillColorPicker = () => {
-    this.setState(state => ({ fillColorPickerOpen: !state.fillColorPickerOpen }));
+    this.setState((state) => ({ fillColorPickerOpen: !state.fillColorPickerOpen }));
   }
 
   toggleStrokeColorPicker = () => {
-    this.setState(state => ({ strokeColorPickerOpen: !state.strokeColorPickerOpen }));
+    this.setState((state) => ({ strokeColorPickerOpen: !state.strokeColorPickerOpen }));
   }
 
   handleStrokeWidthChange = (e: Event) => {
@@ -169,7 +178,7 @@ export default class App extends PureComponent<{}, State> {
     newX: number,
     newY: number,
   ) => {
-    this.setState(state => ({
+    this.setState((state) => ({
       drawables: state.drawables.map((item) => {
         if (item.id === id) {
           return resizeDrawable(item, handleX, handleY, newX, newY);
@@ -181,13 +190,13 @@ export default class App extends PureComponent<{}, State> {
   }
 
   handleRemoveDrawable = (removedDrawable: string) => {
-    this.setState(state => ({
-      drawables: state.drawables.filter(item => item.id !== removedDrawable),
+    this.setState((state) => ({
+      drawables: state.drawables.filter((item) => item.id !== removedDrawable),
     }));
   }
 
   handleDrawableTranslate = (id: string, x: number, y: number) => {
-    this.setState(state => ({
+    this.setState((state) => ({
       drawables: state.drawables.map((i) => {
         if (i.id === id) {
           return translateDrawable(i, x, y);
@@ -210,7 +219,7 @@ export default class App extends PureComponent<{}, State> {
   }
 
   pdfjs = async () => {
-    const pdfjs = (await import('pdfjs-dist')).default;
+    const pdfjs = (await import('pdfjs-dist'));
     pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.js';
     return pdfjs;
   }
@@ -301,7 +310,6 @@ export default class App extends PureComponent<{}, State> {
     return (
       <BackgroundSource source="/pdf-test.pdf" pdfjs={this.pdfjs} hqPdf>
         {(source) => {
-          console.log(source)
           if (source.state === 'LOADING') {
             return (<div>Loading...</div>);
           }
@@ -321,6 +329,7 @@ export default class App extends PureComponent<{}, State> {
             drawables,
             selectedDrawable,
             crop,
+            text,
           } = this.state;
 
           return (
@@ -328,9 +337,10 @@ export default class App extends PureComponent<{}, State> {
               <div style={{ display: 'flex', flexShrink: '0' }}>
                 {
                   drawMode != null && (
-                    <Fragment>
+                    <>
                       {(drawMode === 'rect' || drawMode === 'ellipse') && (
                         <Fragment key="fill">
+                          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                           <button
                             type="button"
                             key="fillColor"
@@ -342,7 +352,8 @@ export default class App extends PureComponent<{}, State> {
                           )}
                         </Fragment>
                       )}
-                      <input key="strokeWidth" type="number" value={strokeWidth} onChange={this.handleStrokeWidthChange} />
+                      <input name="strokeWidth" key="strokeWidth" type="number" value={strokeWidth} onChange={this.handleStrokeWidthChange} />
+                      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                       <button
                         type="button"
                         key="strokeColor"
@@ -353,7 +364,7 @@ export default class App extends PureComponent<{}, State> {
                         <CompactPicker key="strokeColorPicker" colors={colors} onChange={this.handleStrokeColorChange} />
                       )}
                       <span key="spacer" style={{ margin: '10px', borderRight: '1px solid #333' }} />
-                    </Fragment>
+                    </>
                   )
                 }
                 <DragIcon style={{ ...iconStyles, color: drawMode === null ? 'blue' : 'black' }} onClick={this.selectDrawMode(null)} />
@@ -362,6 +373,7 @@ export default class App extends PureComponent<{}, State> {
                 <EllipseIcon style={{ ...iconStyles, color: drawMode === 'ellipse' ? 'blue' : 'black' }} onClick={this.selectDrawMode('ellipse')} />
                 <LineIcon style={{ ...iconStyles, color: drawMode === 'line' ? 'blue' : 'black' }} onClick={this.selectDrawMode('line')} />
                 <CropIcon style={{ ...iconStyles, color: drawMode === 'crop' ? 'blue' : 'black' }} onClick={this.selectDrawMode('crop')} />
+                <TextIcon style={{ ...iconStyles, color: drawMode === 'text' ? 'blue' : 'black' }} onClick={this.selectDrawMode('text')} />
                 <span style={{ margin: '10px', borderRight: '1px solid #333' }} />
                 <RotateLeftIcon style={iconStyles} onClick={this.rotate(-90)} />
                 <RotateRightIcon style={iconStyles} onClick={this.rotate(90)} />
@@ -377,12 +389,13 @@ export default class App extends PureComponent<{}, State> {
               >
                 <PixelRatioContext.Consumer>
                   {(pixelRatio: number) => (
-                    <Fragment>
+                    <>
                       <Artboard
                         key="artboard"
                         drawMode={drawMode}
                         width={source.width}
                         height={source.height}
+                        text={text}
                         onDrawEnd={this.handleDrawEnd}
                         onCropEnd={this.handleCropEnd}
                         drawingFill={fillColor}
@@ -415,7 +428,7 @@ export default class App extends PureComponent<{}, State> {
                           onConfirmCrop={this.handleConfirmCrop}
                         />
                       </Artboard>
-                    </Fragment>
+                    </>
                   )}
                 </PixelRatioContext.Consumer>
               </UncontrolledEditor>

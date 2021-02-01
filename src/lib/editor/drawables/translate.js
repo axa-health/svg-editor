@@ -9,6 +9,12 @@ export default function translateDrawable<T: Drawable>(drawable: T, x: number, y
         x: drawable.x + x,
         y: drawable.y + y,
       };
+    case 'text':
+      return {
+        ...drawable,
+        x: drawable.x + x,
+        y: drawable.y + y,
+      };
     case 'ellipse':
       return {
         ...drawable,
@@ -18,7 +24,7 @@ export default function translateDrawable<T: Drawable>(drawable: T, x: number, y
     case 'path':
       return {
         ...drawable,
-        points: drawable.points.map(old => ({
+        points: drawable.points.map((old) => ({
           x: old.x + x,
           y: old.y + y,
         })),

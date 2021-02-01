@@ -27,7 +27,10 @@ type State = {
 };
 
 export default class ArtboardCut extends PureComponent<Props, State> {
-  state = {};
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
 
   getRectBounds = ({ startCoord, currentCoord }: {
     startCoord: ?Coords,

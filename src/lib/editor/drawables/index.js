@@ -4,6 +4,7 @@ import EllipseDrawable from './ellipse';
 import LineDrawable from './line';
 import PathDrawable from './path';
 import RectDrawable from './rect';
+import TextDrawable from './text';
 
 export type Drawable = {
   type: 'rect',
@@ -12,6 +13,15 @@ export type Drawable = {
   y: number,
   width: number,
   height: number,
+  strokeWidth: number,
+  stroke: string,
+  fill: string,
+} | {
+  type: 'text',
+  id: string,
+  x: number,
+  y: number,
+  text: string,
   strokeWidth: number,
   stroke: string,
   fill: string,
@@ -71,8 +81,8 @@ type Props = {|
   height: number,
 |};
 
-
 export default class Drawables extends PureComponent<Props> {
+  // eslint-disable-next-line react/static-property-placement
   static defaultProps = {
     // flow needs the prop to be required even it's not
     // eslint-disable-next-line react/default-props-match-prop-types
@@ -251,7 +261,6 @@ export default class Drawables extends PureComponent<Props> {
       );
     };
 
-
     const { onResizeDrawableEnd } = this.props;
 
     const mouseUpHandler = (e3: MouseEvent) => {
@@ -376,6 +385,25 @@ export default class Drawables extends PureComponent<Props> {
                       width={item.width}
                       height={item.height}
                       fill={item.fill}
+                      stroke={item.stroke}
+                      strokeWidth={item.strokeWidth}
+                      selected={selectedDrawable === item.id}
+                      onSelect={this.handleDrawableSelect}
+                      onDragIndicatorMouseDown={this.handleDragIndicatorMouseDown}
+                      dragIndicatorStrokeWidth={diStrokeWidth}
+                      onResizeHandleMouseDown={this.handleResizeHandleMouseDown}
+                      canSelectDrawable={canSelectDrawable}
+                    />
+                  );
+                case 'text':
+                  return (
+                    <TextDrawable
+                      key={item.id}
+                      id={item.id}
+                      x={item.x}
+                      y={item.y}
+                      fill={item.fill}
+                      text={item.text}
                       stroke={item.stroke}
                       strokeWidth={item.strokeWidth}
                       selected={selectedDrawable === item.id}
