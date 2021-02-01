@@ -114,6 +114,7 @@ export default class ArtboardText extends PureComponent<Props, State> {
         {textBounds && (
           <text
             {...textBounds}
+            letterSpacing="1"
             fontFamily="Arial, Helvetica, sans-serif"
             fontSize="16px"
             alignmentBaseline="hanging"

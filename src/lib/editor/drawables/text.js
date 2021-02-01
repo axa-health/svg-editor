@@ -82,14 +82,16 @@ export default class TextDrawable extends PureComponent<Props, State> {
           x={x}
           alignmentBaseline="hanging"
           y={y}
+          letterSpacing="1"
           fontFamily="Arial, Helvetica, sans-serif"
           fontSize="16px"
           onClick={this.handleClick}
           pointerEvents="visible-painted"
           style={{ cursor: canSelectDrawable ? 'pointer' : undefined }}
         >
-          {text.map((line) => (
-            <tspan x={x} dy={16}>{line}</tspan>
+          {text.map((line, i) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <tspan key={`${line}-${i}`} x={x} dy={16}>{line}</tspan>
           ))}
         </text>
         {selected && (
