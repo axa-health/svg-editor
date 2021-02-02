@@ -22,7 +22,7 @@ export type Drawable = {
   x: number,
   y: number,
   text: string,
-  color: string,
+  fill: string,
   fontSize: string,
 } | {
   type: 'ellipse',
@@ -401,7 +401,7 @@ export default class Drawables extends PureComponent<Props> {
                       id={item.id}
                       x={item.x}
                       y={item.y}
-                      color={item.color}
+                      fill={item.fill}
                       text={item.text}
                       fontSize={item.fontSize}
                       selected={selectedDrawable === item.id}

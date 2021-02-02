@@ -84,7 +84,7 @@ export default class ArtboardText extends PureComponent<Props, State> {
         id,
         ...textBounds,
         text: this.props.text,
-        color: this.props.drawingFill,
+        fill: this.props.drawingFill,
         fontSize: this.props.fontSize,
       });
     }
@@ -116,7 +116,7 @@ export default class ArtboardText extends PureComponent<Props, State> {
           <text
             {...textBounds}
             letterSpacing="1"
-            color={drawingFill}
+            fill={drawingFill}
             fontFamily="Arial, Helvetica, sans-serif"
             fontSize={`${fontSize}px`}
             alignmentBaseline="hanging"

@@ -9,7 +9,7 @@ type Props = {|
   y: number,
   selected: boolean,
   fontSize: number,
-  color: string,
+  fill: string,
   onSelect: (e: MouseEvent, id: string) => void,
   onDragIndicatorMouseDown: (e: MouseEvent, id: string) => void,
   dragIndicatorStrokeWidth: number,
@@ -58,7 +58,7 @@ export default class TextDrawable extends PureComponent<Props, State> {
       dragIndicatorStrokeWidth: diStrokeWidth,
       canSelectDrawable,
       fontSize,
-      color,
+      fill,
     } = this.props;
 
     const {
@@ -89,7 +89,7 @@ export default class TextDrawable extends PureComponent<Props, State> {
           fontSize={`${fontSize}px`}
           onClick={this.handleClick}
           pointerEvents="visible-painted"
-          color={color}
+          fill={fill}
           style={{ cursor: canSelectDrawable ? 'pointer' : undefined }}
         >
           {text.map((line, i) => (
