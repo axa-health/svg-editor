@@ -20,13 +20,16 @@ type State = {
   height: number,
   width: number,
 }
+
 type SVGTextElement = HTMLElement &
   {
     getBBox: () => { width: number, height: number },
   }
 
+type ReactRefT<T> = { current: ?T }
+
 export default class TextDrawable extends PureComponent<Props, State> {
-  textRef: ElementRef<SVGTextElement>;
+  textRef: ReactRefT<SVGTextElement>;
 
   constructor(props: Props) {
     super(props);
@@ -34,7 +37,7 @@ export default class TextDrawable extends PureComponent<Props, State> {
       height: 0,
       width: 0,
     };
-    this.textRef = React.createRef<SVGTextElement>();
+    this.textRef = React.createRef();
   }
 
   componentDidMount() {

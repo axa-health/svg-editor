@@ -23,7 +23,7 @@ export type Drawable = {
   y: number,
   text: string,
   fill: string,
-  fontSize: string,
+  fontSize: number,
 } | {
   type: 'ellipse',
   id: string,
