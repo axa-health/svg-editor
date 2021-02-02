@@ -7,6 +7,7 @@ type Props ={
   drawingFill: string,
   drawingStroke: string,
   drawingStrokeWidth: number,
+  fontSize: number,
   text: $ReadOnlyArray<string>,
   width: number,
   height: number,
@@ -83,9 +84,8 @@ export default class ArtboardText extends PureComponent<Props, State> {
         id,
         ...textBounds,
         text: this.props.text,
-        fill: this.props.drawingFill,
-        stroke: this.props.drawingStroke,
-        strokeWidth: this.props.drawingStrokeWidth,
+        color: this.props.drawingFill,
+        fontSize: this.props.fontSize,
       });
     }
     this.setState({ startCoord: null, currentCoord: null });
@@ -98,6 +98,7 @@ export default class ArtboardText extends PureComponent<Props, State> {
       drawingFill,
       children,
       text,
+      fontSize,
     } = this.props;
 
     const textBounds = this.getTextBounds(this.state);
@@ -115,12 +116,15 @@ export default class ArtboardText extends PureComponent<Props, State> {
           <text
             {...textBounds}
             letterSpacing="1"
+            color={drawingFill}
             fontFamily="Arial, Helvetica, sans-serif"
-            fontSize="16px"
+            fontSize={`${fontSize}px`}
             alignmentBaseline="hanging"
-            fill={drawingFill}
           >
-            {text}
+            {text.map((line, i) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <tspan key={`${line}-${i}`} x={textBounds.x} dy={fontSize}>{line}</tspan>
+            ))}
           </text>
         )}
       </ArtboardBase>

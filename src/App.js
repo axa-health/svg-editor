@@ -26,6 +26,7 @@ type State = {
   strokeColorPickerOpen: boolean,
   strokeColor: string,
   strokeWidth: number,
+  fontSize: number,
   fillColorPickerOpen: boolean,
   fillColor: string,
   drawables: Array<Drawable>,
@@ -99,6 +100,7 @@ export default class App extends PureComponent<{}, State> {
       strokeColorPickerOpen: false,
       strokeColor: '#00005b',
       strokeWidth: 10,
+      fontSize: 16,
       fillColorPickerOpen: false,
       fillColor: '#00008f',
       drawables: [],
@@ -160,6 +162,11 @@ export default class App extends PureComponent<{}, State> {
   handleStrokeWidthChange = (e: Event) => {
     // $FlowFixMe
     this.setState({ strokeWidth: e.target.value });
+  }
+
+  handleFontSizeChange = (e: Event) => {
+    // $FlowFixMe
+    this.setState({ fontSize: e.target.value });
   }
 
   handleSelectDrawable = (selectedDrawable: ?string) => {
@@ -330,6 +337,7 @@ export default class App extends PureComponent<{}, State> {
             selectedDrawable,
             crop,
             text,
+            fontSize,
           } = this.state;
 
           return (
@@ -353,6 +361,7 @@ export default class App extends PureComponent<{}, State> {
                         </Fragment>
                       )}
                       <input name="strokeWidth" key="strokeWidth" type="number" value={strokeWidth} onChange={this.handleStrokeWidthChange} />
+                      {drawMode === 'text' && (<input name="fontSize" key="fontSize" type="number" value={fontSize} onChange={this.handleFontSizeChange} />)}
                       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                       <button
                         type="button"
@@ -403,6 +412,7 @@ export default class App extends PureComponent<{}, State> {
                         drawingStrokeWidth={strokeWidth}
                         onDrawStart={this.onDrawStart}
                         onCropStart={this.onCropStart}
+                        fontSize={fontSize}
                       >
                         <Drawables
                           diStrokeWidth={5 * pixelRatio}
@@ -414,6 +424,7 @@ export default class App extends PureComponent<{}, State> {
                           onRemoveDrawable={this.handleRemoveDrawable}
                           width={source.width}
                           height={source.height}
+                          fontSize={fontSize}
                         />
                         <Cropable
                           key="cropable"
@@ -421,6 +432,7 @@ export default class App extends PureComponent<{}, State> {
                           width={source.width}
                           height={source.height}
                           crop={crop}
+                          fontSize={fontSize}
                           canTransformCrop={drawMode === 'crop'}
                           onResizeCrop={this.handleResizeCrop}
                           onCropTranslate={this.handleCropTranslate}

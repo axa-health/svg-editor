@@ -22,9 +22,8 @@ export type Drawable = {
   x: number,
   y: number,
   text: string,
-  strokeWidth: number,
-  stroke: string,
-  fill: string,
+  color: string,
+  fontSize: string,
 } | {
   type: 'ellipse',
   id: string,
@@ -402,10 +401,9 @@ export default class Drawables extends PureComponent<Props> {
                       id={item.id}
                       x={item.x}
                       y={item.y}
-                      fill={item.fill}
+                      color={item.color}
                       text={item.text}
-                      stroke={item.stroke}
-                      strokeWidth={item.strokeWidth}
+                      fontSize={item.fontSize}
                       selected={selectedDrawable === item.id}
                       onSelect={this.handleDrawableSelect}
                       onDragIndicatorMouseDown={this.handleDragIndicatorMouseDown}

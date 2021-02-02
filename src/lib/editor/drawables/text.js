@@ -8,7 +8,8 @@ type Props = {|
   x: number,
   y: number,
   selected: boolean,
-  strokeWidth: number,
+  fontSize: number,
+  color: string,
   onSelect: (e: MouseEvent, id: string) => void,
   onDragIndicatorMouseDown: (e: MouseEvent, id: string) => void,
   dragIndicatorStrokeWidth: number,
@@ -54,9 +55,10 @@ export default class TextDrawable extends PureComponent<Props, State> {
       x,
       y,
       selected,
-      strokeWidth,
       dragIndicatorStrokeWidth: diStrokeWidth,
       canSelectDrawable,
+      fontSize,
+      color,
     } = this.props;
 
     const {
@@ -64,34 +66,35 @@ export default class TextDrawable extends PureComponent<Props, State> {
       width,
     } = this.state;
 
-    if (!text.length) {
+    if (text && !text.length) {
       return null;
     }
 
-    const strokeWidthHalf = strokeWidth / 2;
+    const strokeWidthHalf = diStrokeWidth / 2;
 
     const diX = x - strokeWidthHalf;
     const diY = y - strokeWidthHalf;
-    const diWidth = width + strokeWidth;
-    const diHeight = height + strokeWidth;
+    const diWidth = width + diStrokeWidth;
+    const diHeight = height + diStrokeWidth;
 
     return (
       <g>
         <text
           ref={this.textRef}
           x={x}
-          alignmentBaseline="hanging"
           y={y}
+          alignmentBaseline="hanging"
           letterSpacing="1"
           fontFamily="Arial, Helvetica, sans-serif"
-          fontSize="16px"
+          fontSize={`${fontSize}px`}
           onClick={this.handleClick}
           pointerEvents="visible-painted"
+          color={color}
           style={{ cursor: canSelectDrawable ? 'pointer' : undefined }}
         >
           {text.map((line, i) => (
             // eslint-disable-next-line react/no-array-index-key
-            <tspan key={`${line}-${i}`} x={x} dy={16}>{line}</tspan>
+            <tspan key={`${line}-${i}`} x={x} dy={fontSize}>{line}</tspan>
           ))}
         </text>
         {selected && (
