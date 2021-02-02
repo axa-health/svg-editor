@@ -21,7 +21,7 @@ export type Drawable = {
   id: string,
   x: number,
   y: number,
-  text: string,
+  text: $ReadOnlyArray<string>,
   fill: string,
   fontSize: number,
 } | {
