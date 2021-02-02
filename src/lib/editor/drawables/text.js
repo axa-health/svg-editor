@@ -1,5 +1,5 @@
 // @flow
-import React, { PureComponent, type Ref } from 'react';
+import React, { PureComponent, type ElementRef } from 'react';
 import DragIndicator from './drag-indicator';
 
 type Props = {|
@@ -26,7 +26,7 @@ type SVGTextElement = HTMLElement &
   }
 
 export default class TextDrawable extends PureComponent<Props, State> {
-  textRef: Ref<SVGTextElement>;
+  textRef: ElementRef<SVGTextElement>;
 
   constructor(props: Props) {
     super(props);
