@@ -408,7 +408,6 @@ export default class Drawables extends PureComponent<Props> {
                       onSelect={this.handleDrawableSelect}
                       onDragIndicatorMouseDown={this.handleDragIndicatorMouseDown}
                       dragIndicatorStrokeWidth={diStrokeWidth}
-                      onResizeHandleMouseDown={this.handleResizeHandleMouseDown}
                       canSelectDrawable={canSelectDrawable}
                     />
                   );
