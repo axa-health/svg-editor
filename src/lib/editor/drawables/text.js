@@ -1,5 +1,5 @@
 // @flow
-import React, { PureComponent } from 'react';
+import React, { PureComponent, type Ref } from 'react';
 import DragIndicator from './drag-indicator';
 
 type Props = {|
@@ -22,7 +22,9 @@ type State = {
 }
 
 export default class TextDrawable extends PureComponent<Props, State> {
-  constructor(props) {
+  textRef: Ref<any>;
+
+  constructor(props: Props) {
     super(props);
     this.state = {
       height: 0,
