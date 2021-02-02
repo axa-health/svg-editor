@@ -1,5 +1,5 @@
 // @flow
-import React, { PureComponent, type ElementRef } from 'react';
+import React, { PureComponent } from 'react';
 import DragIndicator from './drag-indicator';
 
 type Props = {|
