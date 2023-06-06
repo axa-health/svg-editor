@@ -35,19 +35,6 @@ export default class ArtboardRect extends PureComponent<Props, State> {
     if (!startCoord || !currentCoord) {
       return null;
     }
-
-    const lowerX = Math.min(startCoord.x, currentCoord.x);
-    const lowerY = Math.min(startCoord.y, currentCoord.y);
-    const higherX = Math.max(startCoord.x, currentCoord.x);
-    const higherY = Math.max(startCoord.y, currentCoord.y);
-
-    const width = higherX - lowerX;
-    const height = higherY - lowerY;
-
-    if (width < this.props.minWidth && height < this.props.minHeight) {
-      return null;
-    }
-
     return {
       x1: startCoord.x,
       y1: startCoord.y,

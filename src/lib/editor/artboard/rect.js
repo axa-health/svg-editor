@@ -45,7 +45,10 @@ export default class ArtboardRect extends PureComponent<Props, State> {
     const width = higherX - lowerX;
     const height = higherY - lowerY;
 
-    if (width < this.props.minWidth && height < this.props.minHeight) {
+    if (width === 0 || height === 0) {
+      return null;
+    }
+    if (width < this.props.minWidth || height < this.props.minHeight) {
       return null;
     }
 

@@ -45,7 +45,10 @@ export default class ArtboardEllipse extends PureComponent<Props, State> {
     const halfWidth = width / 2;
     const halfHeight = height / 2;
 
-    if (width < this.props.minWidth && height < this.props.minHeight) {
+    if (width === 0 || height === 0) {
+      return null;
+    }
+    if (width < this.props.minWidth || height < this.props.minHeight) {
       return null;
     }
 
