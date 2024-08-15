@@ -13,6 +13,7 @@ sventschui-react-svg-editor-*.tgz
 
 # production
 /build
+/dist
 .idea
 
 # misc
