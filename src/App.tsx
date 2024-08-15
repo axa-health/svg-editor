@@ -1,7 +1,5 @@
 import type { ChangeEvent, CSSProperties, FunctionComponent, MouseEvent } from 'react';
-import { useMemo } from 'react';
-import { useCallback } from 'react';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import {
   MdCrop as CropIcon,
   MdCropLandscape as RectIcon,
@@ -15,14 +13,14 @@ import {
 } from 'react-icons/md';
 import type { ColorResult } from 'react-color';
 import { CompactPicker } from 'react-color';
-import UncontrolledEditor from './lib/editor/uncontrolled';
-import BackgroundSource from './lib/background-source';
-import Drawables, { type Drawable } from './lib/editor/drawables';
-import Cropable, { type Crop } from './lib/editor/cropables';
-import Artboard from './lib/editor/artboard';
-import resizeDrawable from './lib/editor/drawables/resize';
-import translateDrawable from './lib/editor/drawables/translate';
-import { PixelRatioContext } from './lib/editor';
+import UncontrolledEditor from '../lib/editor/uncontrolled';
+import BackgroundSource from '../lib/background-source';
+import Drawables, { type Drawable } from '../lib/editor/drawables';
+import Cropable, { type Crop } from '../lib/editor/cropables';
+import Artboard from '../lib/editor/artboard';
+import resizeDrawable from '../lib/editor/drawables/resize';
+import translateDrawable from '../lib/editor/drawables/translate';
+import { PixelRatioContext } from '../lib/editor';
 
 const colorStyle: CSSProperties = {
   borderRadius: '3px',
@@ -89,7 +87,9 @@ const colors = [
 
 const pdfjs = async () => {
   const pdfJsLib = await import('pdfjs-dist');
-  pdfJsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.mjs';
+  pdfJsLib.GlobalWorkerOptions.workerSrc = (
+    await import('pdfjs-dist/build/pdf.worker?worker&url')
+  ).default;
   return pdfJsLib;
 };
 
@@ -318,14 +318,14 @@ const App: FunctionComponent = () => {
   );
 
   return (
-    <BackgroundSource source="/png-test.png" pdfjs={pdfjs} hqPdf>
+    <BackgroundSource source="/pdf-test.pdf" pdfjs={pdfjs} hqPdf>
       {(source) => {
         if (source.state === 'LOADING') {
           return <div>Loading...</div>;
         }
 
         if (source.state === 'ERROR') {
-          return <div>Error...</div>;
+          return <div>Error... {source.error.code}</div>;
         }
 
         return (
