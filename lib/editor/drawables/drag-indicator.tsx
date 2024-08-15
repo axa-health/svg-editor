@@ -1,13 +1,13 @@
-import type { CSSProperties, FunctionComponent, MouseEvent } from 'react';
+import type { CSSProperties, FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
 type Props = {
   id: string;
-  onDragIndicatorMouseDown: (e: MouseEvent<SVGRectElement>) => void;
-  onResizeHandleTopLeftMouseDown?: (e: MouseEvent<SVGCircleElement>) => void;
-  onResizeHandleTopRightMouseDown?: (e: MouseEvent<SVGCircleElement>) => void;
-  onResizeHandleBottomLeftMouseDown?: (e: MouseEvent<SVGCircleElement>) => void;
-  onResizeHandleBottomRightMouseDown?: (e: MouseEvent<SVGCircleElement>) => void;
+  onDragIndicatorMouseDown: (e: ReactMouseEvent<SVGRectElement>) => void;
+  onResizeHandleTopLeftMouseDown?: (e: ReactMouseEvent<SVGCircleElement>) => void;
+  onResizeHandleTopRightMouseDown?: (e: ReactMouseEvent<SVGCircleElement>) => void;
+  onResizeHandleBottomLeftMouseDown?: (e: ReactMouseEvent<SVGCircleElement>) => void;
+  onResizeHandleBottomRightMouseDown?: (e: ReactMouseEvent<SVGCircleElement>) => void;
   diX: number;
   diY: number;
   diWidth: number;

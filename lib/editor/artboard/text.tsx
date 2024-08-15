@@ -136,7 +136,6 @@ const ArtboardText: FunctionComponent<Props> = ({
           alignmentBaseline="hanging"
         >
           {text.map((line, i) => (
-            // eslint-disable-next-line react/no-array-index-key
             <tspan key={`${line}-${i}`} x={textBounds.x} dy={fontSize}>
               {line}
             </tspan>

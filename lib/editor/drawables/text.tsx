@@ -1,4 +1,4 @@
-import type { CSSProperties, FunctionComponent, MouseEvent } from 'react';
+import type { CSSProperties, FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import DragIndicator from './drag-indicator';
 
@@ -10,8 +10,8 @@ type Props = {
   selected: boolean;
   fontSize: number;
   fill: string;
-  onSelect: (e: MouseEvent, id: string) => void;
-  onDragIndicatorMouseDown: (e: MouseEvent, id: string) => void;
+  onSelect: (e: ReactMouseEvent, id: string) => void;
+  onDragIndicatorMouseDown: (e: ReactMouseEvent, id: string) => void;
   dragIndicatorStrokeWidth: number;
   canSelectDrawable: boolean;
 };
@@ -40,14 +40,14 @@ const TextDrawable: FunctionComponent<Props> = ({
   }, []);
 
   const handleClick = useCallback(
-    (e: MouseEvent) => {
+    (e: ReactMouseEvent) => {
       onSelect(e, id);
     },
     [id, onSelect],
   );
 
   const handleDragIndicatorMouseDown = useCallback(
-    (e: MouseEvent) => {
+    (e: ReactMouseEvent) => {
       onDragIndicatorMouseDown(e, id);
     },
     [id, onDragIndicatorMouseDown],

@@ -1,4 +1,9 @@
-import type { ChangeEvent, CSSProperties, FunctionComponent, MouseEvent } from 'react';
+import type {
+  ChangeEvent,
+  CSSProperties,
+  FunctionComponent,
+  MouseEvent as ReactMouseEvent,
+} from 'react';
 import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import {
   MdCrop as CropIcon,
@@ -165,7 +170,7 @@ const App: FunctionComponent = () => {
 
   const handleResizeDrawable = useCallback(
     (
-      e: MouseEvent,
+      e: ReactMouseEvent,
       id: string,
       handleX: 'left' | 'right',
       handleY: 'top' | 'bottom',

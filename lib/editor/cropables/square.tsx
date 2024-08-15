@@ -1,4 +1,4 @@
-import type { FunctionComponent, MouseEvent } from 'react';
+import type { FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
 import React, { useCallback } from 'react';
 import DragIndicator from '../drawables/drag-indicator';
 
@@ -8,9 +8,9 @@ type Props = {
   y: number;
   width: number;
   height: number;
-  onDragIndicatorMouseDown: (e: MouseEvent) => void;
+  onDragIndicatorMouseDown: (e: ReactMouseEvent) => void;
   onResizeHandleMouseDown: (
-    e: MouseEvent,
+    e: ReactMouseEvent,
     handleX: 'left' | 'right',
     handleY: 'top' | 'bottom',
   ) => void;
@@ -28,27 +28,27 @@ const RectCrop: FunctionComponent<Props> = ({
   id,
 }) => {
   const handleResizeHandleTopLeftMouseDown = useCallback(
-    (e: MouseEvent) => onResizeHandleMouseDown(e, 'left', 'top'),
+    (e: ReactMouseEvent) => onResizeHandleMouseDown(e, 'left', 'top'),
     [onResizeHandleMouseDown],
   );
 
   const handleResizeHandleTopRightMouseDown = useCallback(
-    (e: MouseEvent) => onResizeHandleMouseDown(e, 'right', 'top'),
+    (e: ReactMouseEvent) => onResizeHandleMouseDown(e, 'right', 'top'),
     [onResizeHandleMouseDown],
   );
 
   const handleResizeHandleBottomLeftMouseDown = useCallback(
-    (e: MouseEvent) => onResizeHandleMouseDown(e, 'left', 'bottom'),
+    (e: ReactMouseEvent) => onResizeHandleMouseDown(e, 'left', 'bottom'),
     [onResizeHandleMouseDown],
   );
 
   const handleResizeHandleBottomRightMouseDown = useCallback(
-    (e: MouseEvent) => onResizeHandleMouseDown(e, 'right', 'bottom'),
+    (e: ReactMouseEvent) => onResizeHandleMouseDown(e, 'right', 'bottom'),
     [onResizeHandleMouseDown],
   );
 
   const handleDragIndicatorMouseDown = useCallback(
-    (e: MouseEvent) => {
+    (e: ReactMouseEvent) => {
       onDragIndicatorMouseDown(e);
     },
     [onDragIndicatorMouseDown],

@@ -1,5 +1,5 @@
 {
-  "extends": ["next", "airbnb-typescript", "plugin:react-perf/recommended", "prettier"],
+  "extends": ["airbnb-typescript", "plugin:react-perf/recommended", "prettier"],
   "parserOptions": {
     "project": ["./tsconfig.json"]
   },
@@ -7,6 +7,9 @@
   "rules": {
     "prettier/prettier": "error",
     "react/display-name": 0,
-    "@typescript-eslint/consistent-type-imports": "error"
+    "@typescript-eslint/consistent-type-imports": "error",
+    "react/jsx-filename-extension": 0,
+    "import/extensions": 0,
+    "import/no-extraneous-dependencies": 0
   }
 }

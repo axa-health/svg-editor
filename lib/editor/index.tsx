@@ -2,7 +2,7 @@ import type {
   FunctionComponent,
   MouseEvent as ReactMouseEvent,
   PropsWithChildren,
-  WheelEvent,
+  WheelEvent as ReactWheelEvent,
 } from 'react';
 import { useEffect } from 'react';
 import React, { createContext, useCallback, useMemo, useRef, useState } from 'react';
@@ -164,7 +164,7 @@ const Editor: FunctionComponent<Props> = ({
   );
 
   const handleWheel = useCallback(
-    (e: WheelEvent<SVGElement>) => {
+    (e: ReactWheelEvent<SVGElement>) => {
       e.preventDefault();
 
       const newZoom = Math.min(maxZoom || 4, Math.max(minZoom || 1, zoom - e.deltaY / 100));

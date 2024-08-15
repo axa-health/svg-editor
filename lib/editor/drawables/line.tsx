@@ -1,4 +1,4 @@
-import type { CSSProperties, FunctionComponent, MouseEvent } from 'react';
+import type { CSSProperties, FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
 import React, { useCallback, useMemo } from 'react';
 import DragIndicator from './drag-indicator';
 
@@ -11,11 +11,11 @@ type Props = {
   stroke: string;
   strokeWidth: number;
   selected: boolean;
-  onSelect: (e: MouseEvent, id: string) => void;
-  onDragIndicatorMouseDown: (e: MouseEvent, id: string) => void;
+  onSelect: (e: ReactMouseEvent, id: string) => void;
+  onDragIndicatorMouseDown: (e: ReactMouseEvent, id: string) => void;
   dragIndicatorStrokeWidth: number;
   onResizeHandleMouseDown: (
-    e: MouseEvent,
+    e: ReactMouseEvent,
     id: string,
     handleX: 'left' | 'right',
     handleY: 'top' | 'bottom',
@@ -39,24 +39,24 @@ const LineDrawable: FunctionComponent<Props> = ({
   canSelectDrawable,
 }) => {
   const handleClick = useCallback(
-    (e: MouseEvent) => {
+    (e: ReactMouseEvent) => {
       onSelect(e, id);
     },
     [onSelect, id],
   );
 
   const handleResizeHandleTopLeftMouseDown = useCallback(
-    (e: MouseEvent) => onResizeHandleMouseDown(e, id, 'left', 'top'),
+    (e: ReactMouseEvent) => onResizeHandleMouseDown(e, id, 'left', 'top'),
     [id, onResizeHandleMouseDown],
   );
 
   const handleResizeHandleBottomRightMouseDown = useCallback(
-    (e: MouseEvent) => onResizeHandleMouseDown(e, id, 'right', 'bottom'),
+    (e: ReactMouseEvent) => onResizeHandleMouseDown(e, id, 'right', 'bottom'),
     [id, onResizeHandleMouseDown],
   );
 
   const handleDragIndicatorMouseDown = useCallback(
-    (e: MouseEvent) => onDragIndicatorMouseDown(e, id),
+    (e: ReactMouseEvent) => onDragIndicatorMouseDown(e, id),
     [id, onDragIndicatorMouseDown],
   );
   const strokeWidthHalf = useMemo(() => strokeWidth / 2, [strokeWidth]);
