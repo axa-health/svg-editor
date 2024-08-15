@@ -1,11 +1,9 @@
-// @flow
-import React, { PureComponent, type Node } from 'react';
+import React, { PureComponent, type ReactNode } from 'react';
 
 type Props ={
   width: number,
   height: number,
-  children: Node,
-  children?: Node,
+  children?: ReactNode,
   onMouseDown: ({ start: { x: number, y: number } }, MouseEvent) => void,
   onMouseMove: ({
       start: { x: number, y: number },

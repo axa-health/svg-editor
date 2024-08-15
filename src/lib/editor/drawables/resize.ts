@@ -1,10 +1,9 @@
-// @flow
 import type { Drawable } from '.';
 
 const rectMinWidth = 10;
 const ellipseMinWidth = 10;
 
-export default function resizeDrawable<T: Drawable>(
+export default function resizeDrawable<T extends Drawable>(
   drawable: T,
   handleX: 'left' | 'right',
   handleY: 'top' | 'bottom',
@@ -13,12 +12,7 @@ export default function resizeDrawable<T: Drawable>(
 ): T {
   switch (drawable.type) {
     case 'rect': {
-      let {
-        x,
-        y,
-        width,
-        height,
-      } = drawable;
+      let { x, y, width, height } = drawable;
 
       if (handleX === 'left') {
         width = Math.max(rectMinWidth, width - (newX - x));
@@ -43,12 +37,7 @@ export default function resizeDrawable<T: Drawable>(
       };
     }
     case 'ellipse': {
-      let {
-        cx,
-        cy,
-        rx,
-        ry,
-      } = drawable;
+      let { cx, cy, rx, ry } = drawable;
 
       if (handleX === 'left') {
         const moveRight = newX - (cx - rx);
@@ -90,12 +79,7 @@ export default function resizeDrawable<T: Drawable>(
       };
     }
     case 'line': {
-      let {
-        x1,
-        x2,
-        y1,
-        y2,
-      } = drawable;
+      let { x1, x2, y1, y2 } = drawable;
 
       if (handleX === 'left') {
         x1 = newX;
@@ -118,7 +102,7 @@ export default function resizeDrawable<T: Drawable>(
       };
     }
     default:
-      console.warn('Can\'t resize drawable of type %s', drawable.type); // eslint-disable-line no-console
+      console.warn("Can't resize drawable of type %s", drawable.type); // eslint-disable-line no-console
       return drawable;
   }
 }

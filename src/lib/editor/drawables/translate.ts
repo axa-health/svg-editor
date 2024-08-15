@@ -1,7 +1,10 @@
-// @flow
 import type { Drawable } from '.';
 
-export default function translateDrawable<T: Drawable>(drawable: T, x: number, y: number): T {
+export default function translateDrawable<T extends Drawable>(
+  drawable: T,
+  x: number,
+  y: number,
+): T {
   switch (drawable.type) {
     case 'rect':
       return {

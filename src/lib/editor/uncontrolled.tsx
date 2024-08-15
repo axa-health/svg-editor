@@ -1,4 +1,3 @@
-// @flow
 import React, { PureComponent } from 'react';
 import Editor, { type Props as EditorProps } from '.';
 

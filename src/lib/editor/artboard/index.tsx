@@ -1,4 +1,3 @@
-// @flow
 import React, { Fragment, type Node } from 'react';
 import ArtboardPen from './pen';
 import ArtboardRect from './rect';
