@@ -424,8 +424,8 @@ const App: FunctionComponent = () => {
                       onDrawStart={onDrawStart}
                       onCropStart={onCropStart}
                       fontSize={fontSize}
-                      minHeight={50}
-                      minWidth={100}
+                      minHeight={0}
+                      minWidth={0}
                     >
                       <Drawables
                         diStrokeWidth={5 * pixelRatio}
