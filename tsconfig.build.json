@@ -1,4 +1,10 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["lib"]
+  "include": ["lib"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "noEmit": false,
+    "module": "CommonJS",
+    "moduleResolution": "Node"
+  }
 }

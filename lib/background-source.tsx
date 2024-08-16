@@ -1,7 +1,7 @@
 import type { FunctionComponent, ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import type { FileTypeResult } from 'file-type';
-import { fileTypeFromBlob } from 'file-type';
+import { fromBlob } from 'file-type/browser';
 import type * as PdfJs from 'pdfjs-dist';
 
 type Source = string | Blob | URL;
@@ -128,7 +128,7 @@ const BackgroundSource: FunctionComponent<Props> = ({
         setSourceState({ state: 'LOADING' });
         let fileType: FileTypeResult | undefined;
         try {
-          fileType = await fileTypeFromBlob(sourceToUse);
+          fileType = await fromBlob(sourceToUse);
         } catch (e) {
           setSourceState({
             state: 'ERROR',
