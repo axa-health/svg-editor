@@ -1,13 +1,15 @@
 {
-  "env": { "browser": true },
-  "extends": ["airbnb", "plugin:flowtype/recommended"],
-  "plugins": ["flowtype"],
+  "extends": ["airbnb-typescript", "plugin:react-perf/recommended", "prettier"],
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
+  "plugins": ["prettier"],
   "rules": {
-    "flowtype/require-valid-file-annotation": [2, "always"],
+    "prettier/prettier": "error",
+    "react/display-name": 0,
+    "@typescript-eslint/consistent-type-imports": "error",
     "react/jsx-filename-extension": 0,
-    "react/destructuring-assignment": 0,
-    "react/jsx-props-no-spreading": 0,
-    "react/require-default-props": 0,
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": false, "optionalDependencies": true, "peerDependencies": true}]
+    "import/extensions": 0,
+    "import/no-extraneous-dependencies": 0
   }
 }
