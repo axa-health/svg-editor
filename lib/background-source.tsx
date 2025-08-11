@@ -28,8 +28,8 @@ export type RenderPropFunc = (source: RenderProps) => ReactNode;
 
 type Props = {
   source: Source;
-  hqPdf?: boolean;
   page?: number;
+  hqPdf?: boolean;
   children: RenderPropFunc;
   fetcher?: (url: string) => Promise<Blob>;
   pdfjs: () => Promise<typeof PdfJs>;
@@ -50,9 +50,9 @@ const defaultFetcher = async (url: string): Promise<Blob> => {
 const BackgroundSource: FunctionComponent<Props> = ({
   fetcher = defaultFetcher,
   source,
+  page,
   pdfjs,
   hqPdf,
-  page,
   children,
 }) => {
   const [sourceState, setSourceState] = useState<RenderProps>({ state: 'LOADING' });
@@ -65,7 +65,7 @@ const BackgroundSource: FunctionComponent<Props> = ({
 
       const pdfjsToUse = await pdfjs();
       const pdfDocumentProxy = await pdfjsToUse.getDocument(URL.createObjectURL(blob)).promise;
-      const pdfPageProxy = await pdfDocumentProxy.getPage(page || 1);
+      const pdfPageProxy = await pdfDocumentProxy.getPage(page ?? 1);
       const viewport = pdfPageProxy.getViewport({ scale: zoom, rotation: 0 });
       const canvas = document.createElement('canvas');
       canvas.height = viewport.height;
@@ -232,7 +232,7 @@ const BackgroundSource: FunctionComponent<Props> = ({
 
   useEffect(() => {
     updateSource(source, source);
-  }, [source, updateSource]);
+  }, [source, page, updateSource]);
 
   return children(sourceState);
 };
