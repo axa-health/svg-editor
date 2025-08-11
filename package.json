@@ -1,6 +1,6 @@
 {
   "name": "@axah/react-svg-editor",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "type": "commonjs",
   "scripts": {
     "start": "vite",
