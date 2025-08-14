@@ -4,7 +4,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "vite",
-    "release": "pnpm build && pnpm changeset publish --access==public",
+    "release": "pnpm build && pnpm changeset publish",
     "build": "pnpm clean && tsc --p ./tsconfig.build.json",
     "clean": "rm -rf dist",
     "serve": "vite preview"
