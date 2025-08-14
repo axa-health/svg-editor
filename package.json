@@ -1,6 +1,6 @@
 {
   "name": "@axah/react-svg-editor",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "type": "commonjs",
   "scripts": {
     "start": "vite",
@@ -25,9 +25,10 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
-    "@types/node": "^24.2.0",
+    "@types/node": "^24.2.1",
     "@types/react": "^19.1.9",
     "@types/react-color": "^3.0.12",
+    "@types/react-dom": "^19.1.7",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-react-swc": "^3.7.0",

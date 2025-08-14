@@ -28,6 +28,7 @@ export type RenderPropFunc = (source: RenderProps) => ReactNode;
 
 type Props = {
   source: Source;
+  page?: number;
   hqPdf?: boolean;
   children: RenderPropFunc;
   fetcher?: (url: string) => Promise<Blob>;
@@ -49,6 +50,7 @@ const defaultFetcher = async (url: string): Promise<Blob> => {
 const BackgroundSource: FunctionComponent<Props> = ({
   fetcher = defaultFetcher,
   source,
+  page,
   pdfjs,
   hqPdf,
   children,
@@ -56,14 +58,14 @@ const BackgroundSource: FunctionComponent<Props> = ({
   const [sourceState, setSourceState] = useState<RenderProps>({ state: 'LOADING' });
 
   const pdfToPng = useCallback(
-    async (blob: Blob, zoom: number) => {
+    async (blob: Blob, page: number, zoom: number) => {
       if (!pdfjs) {
         throw new Error('Missing pdfjs prop in BackgroundSource');
       }
 
       const pdfjsToUse = await pdfjs();
       const pdfDocumentProxy = await pdfjsToUse.getDocument(URL.createObjectURL(blob)).promise;
-      const pdfPageProxy = await pdfDocumentProxy.getPage(1);
+      const pdfPageProxy = await pdfDocumentProxy.getPage(page);
       const viewport = pdfPageProxy.getViewport({ scale: zoom, rotation: 0 });
       const canvas = document.createElement('canvas');
       canvas.height = viewport.height;
@@ -147,7 +149,7 @@ const BackgroundSource: FunctionComponent<Props> = ({
 
         if (fileType.mime === 'application/pdf') {
           try {
-            const imageToUse = await pdfToPng(sourceToUse, 1);
+            const imageToUse = await pdfToPng(sourceToUse, page ?? 1, 1);
 
             if (source !== initialSource) {
               return;
@@ -171,7 +173,7 @@ const BackgroundSource: FunctionComponent<Props> = ({
 
           if (hqPdf) {
             try {
-              const hqImageToUse = await pdfToPng(sourceToUse, 5);
+              const hqImageToUse = await pdfToPng(sourceToUse, page ?? 1, 5);
 
               if (source !== initialSource) {
                 return;
@@ -225,12 +227,12 @@ const BackgroundSource: FunctionComponent<Props> = ({
         }
       }
     },
-    [fetcher, hqPdf, pdfToPng, source],
+    [fetcher, hqPdf, pdfToPng, source, page],
   );
 
   useEffect(() => {
     updateSource(source, source);
-  }, [source, updateSource]);
+  }, [source, page, updateSource]);
 
   return children(sourceState);
 };
