@@ -4,9 +4,10 @@
   "type": "commonjs",
   "scripts": {
     "start": "vite",
-    "build": "tsc --p ./tsconfig.build.json",
-    "serve": "vite preview",
-    "prepublishOnly": "pnpm run build && pnpm dlx publint"
+    "release": "pnpm build && pnpm changeset publish",
+    "build": "pnpm clean && tsc --p ./tsconfig.build.json",
+    "clean": "rm -rf dist",
+    "serve": "vite preview"
   },
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
@@ -23,6 +24,7 @@
     "react-dom": ">=18"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.5",
     "@types/node": "^24.2.1",
     "@types/react": "^19.1.9",
     "@types/react-color": "^3.0.12",
@@ -53,5 +55,9 @@
     "vite-plugin-dts": "^4.0.3",
     "vite-plugin-svgr": "^4.2.0",
     "vite-tsconfig-paths": "^5.0.1"
+  },
+  "packageManager": "pnpm@10.14.0",
+  "publishConfig": {
+    "access": "public"
   }
 }
