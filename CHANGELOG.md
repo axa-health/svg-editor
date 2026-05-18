@@ -1,5 +1,11 @@
 # @axah/react-svg-editor
 
+## 2.0.7
+
+### Patch Changes
+
+- 2f490b6: Fix missing public exports from the package root by exposing `PixelRatioContext` and the expected TypeScript types in the compiled library output.
+
 ## 2.0.6
 
 ### Patch Changes
