@@ -4,55 +4,114 @@ import type {
   FunctionComponent,
   MouseEvent as ReactMouseEvent,
 } from 'react';
-import React, { Fragment, useCallback, useMemo, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { ColorResult } from 'react-color';
+import { BlockPicker } from 'react-color';
+import { createPortal } from 'react-dom';
 import {
   MdCrop as CropIcon,
-  MdCropLandscape as RectIcon,
-  MdEdit as PenIcon,
-  MdFormatColorText as TextIcon,
   MdOpenWith as DragIcon,
   MdPanoramaFishEye as EllipseIcon,
   MdRemove as LineIcon,
+  MdEdit as PenIcon,
+  MdCropLandscape as RectIcon,
   MdRotateLeft as RotateLeftIcon,
   MdRotateRight as RotateRightIcon,
+  MdFormatColorText as TextIcon,
 } from 'react-icons/md';
-import type { ColorResult } from 'react-color';
-import { CompactPicker } from 'react-color';
-import UncontrolledEditor from '../lib/editor/uncontrolled';
 import BackgroundSource from '../lib/background-source';
-import Drawables, { type Drawable } from '../lib/editor/drawables';
-import Cropable, { type Crop } from '../lib/editor/cropables';
+import { PixelRatioContext } from '../lib/editor';
 import Artboard from '../lib/editor/artboard';
+import Cropable, { type Crop } from '../lib/editor/cropables';
+import Drawables, { type Drawable } from '../lib/editor/drawables';
 import resizeDrawable from '../lib/editor/drawables/resize';
 import translateDrawable from '../lib/editor/drawables/translate';
-import { PixelRatioContext } from '../lib/editor';
+import UncontrolledEditor from '../lib/editor/uncontrolled';
 
 const colorStyle: CSSProperties = {
-  borderRadius: '3px',
-  margin: '10px',
-  width: '20px',
+  border: '1px solid #cbd5e1',
+  width: '28px',
+  height: '28px',
+  cursor: 'pointer',
+  borderRadius: 0,
 };
 
 const iconStyles: CSSProperties = {
-  color: 'black',
-  margin: '10px',
+  color: '#475569',
+  margin: 0,
+  padding: '6px',
+  borderRadius: 0,
   background: 'transparent',
   border: 0,
+  cursor: 'pointer',
+  transition: 'background-color 140ms ease, color 140ms ease',
 };
 
 const canvasStyle: CSSProperties = {
-  border: '1px solid black',
-  background: 'gray',
+  border: '1px solid #cbd5e1',
+  borderRadius: 0,
+  background: '#f8fafc',
   flex: '1',
-  height: 'auto',
-  width: 'auto',
+  minHeight: 0,
+  width: '100%',
+  boxShadow: 'none',
+  overflow: 'hidden',
 };
 
-const containerStyle: CSSProperties = { height: '100%', display: 'flex', flexDirection: 'column' };
+const containerStyle: CSSProperties = {
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '10px',
+  padding: '10px',
+  background: '#ffffff',
+  boxSizing: 'border-box',
+};
 
-const flexShrinkStyle: CSSProperties = { display: 'flex', flexShrink: '0' };
+const flexShrinkStyle: CSSProperties = {
+  display: 'flex',
+  flexShrink: 0,
+  alignItems: 'center',
+  flexWrap: 'nowrap',
+  gap: '8px',
+  padding: '8px 0',
+  minHeight: '46px',
+  borderRadius: 0,
+  border: 0,
+  borderBottom: '1px solid #dbe3ee',
+  background: 'transparent',
+  overflowX: 'auto',
+  overflowY: 'hidden',
+};
 
-const spacerStyle: CSSProperties = { margin: '10px', borderRight: '1px solid #333' };
+const spacerStyle: CSSProperties = {
+  width: '1px',
+  height: '24px',
+  margin: '0 4px',
+  background: '#d5deea',
+};
+
+const numberInputStyle: CSSProperties = {
+  height: '30px',
+  borderRadius: 0,
+  border: '1px solid #cbd5e1',
+  padding: '0 8px',
+};
+
+const pickerAnchorStyle: CSSProperties = {
+  position: 'relative',
+  display: 'inline-block',
+  lineHeight: 0,
+  verticalAlign: 'top',
+};
+
+const pickerPopoverStyle: CSSProperties = {
+  position: 'fixed',
+  transform: 'translateX(-50%)',
+  zIndex: 999,
+};
+
+type PickerPosition = { top: number; left: number };
 
 const colors = [
   '#00005b',
@@ -112,6 +171,12 @@ const App: FunctionComponent = () => {
   const [drawables, setDrawables] = useState<ReadonlyArray<Drawable>>([]);
   const [selectedDrawable, setSelectedDrawable] = useState<string | undefined>(undefined);
   const [crop, setCrop] = useState<Crop | undefined>(undefined);
+  const fillPickerRef = useRef<HTMLDivElement>(null);
+  const strokePickerRef = useRef<HTMLDivElement>(null);
+  const fillPopoverRef = useRef<HTMLDivElement>(null);
+  const strokePopoverRef = useRef<HTMLDivElement>(null);
+  const [fillPickerPosition, setFillPickerPosition] = useState<PickerPosition | undefined>();
+  const [strokePickerPosition, setStrokePickerPosition] = useState<PickerPosition | undefined>();
   const [text] = useState<ReadonlyArray<string>>([
     'Hans Muster',
     'Musterstrasse 18',
@@ -150,10 +215,78 @@ const App: FunctionComponent = () => {
 
   const toggleFillColorPicker = useCallback(() => {
     setFillColorPickerOpen((prevOpen) => !prevOpen);
+    setStrokeColorPickerOpen(false);
   }, []);
 
   const toggleStrokeColorPicker = useCallback(() => {
     setStrokeColorPickerOpen((prevOpen) => !prevOpen);
+    setFillColorPickerOpen(false);
+  }, []);
+
+  const updatePickerPositions = useCallback(() => {
+    const fillRect = fillPickerRef.current?.getBoundingClientRect();
+    if (fillRect) {
+      setFillPickerPosition({
+        top: fillRect.bottom + 10,
+        left: fillRect.left + fillRect.width / 2,
+      });
+    }
+
+    const strokeRect = strokePickerRef.current?.getBoundingClientRect();
+    if (strokeRect) {
+      setStrokePickerPosition({
+        top: strokeRect.bottom + 10,
+        left: strokeRect.left + strokeRect.width / 2,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!fillColorPickerOpen && !strokeColorPickerOpen) {
+      return;
+    }
+
+    updatePickerPositions();
+
+    const handleReposition = () => updatePickerPositions();
+    window.addEventListener('resize', handleReposition);
+    window.addEventListener('scroll', handleReposition, true);
+
+    return () => {
+      window.removeEventListener('resize', handleReposition);
+      window.removeEventListener('scroll', handleReposition, true);
+    };
+  }, [fillColorPickerOpen, strokeColorPickerOpen, updatePickerPositions]);
+
+  useEffect(() => {
+    const onWindowMouseDown = (event: MouseEvent) => {
+      const target = event.target as Node | null;
+
+      if (!target) {
+        return;
+      }
+
+      const clickedInsideFill = fillPickerRef.current?.contains(target);
+      const clickedInsideStroke = strokePickerRef.current?.contains(target);
+      const clickedInsideFillPopover = fillPopoverRef.current?.contains(target);
+      const clickedInsideStrokePopover = strokePopoverRef.current?.contains(target);
+
+      if (
+        !clickedInsideFill &&
+        !clickedInsideStroke &&
+        !clickedInsideFillPopover &&
+        !clickedInsideStrokePopover
+      ) {
+        setFillColorPickerOpen(false);
+        setStrokeColorPickerOpen(false);
+      }
+    };
+
+    window.addEventListener('mousedown', onWindowMouseDown);
+
+    return () => {
+      window.removeEventListener('mousedown', onWindowMouseDown);
+    };
   }, []);
 
   const handleStrokeWidthChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -170,7 +303,7 @@ const App: FunctionComponent = () => {
 
   const handleResizeDrawable = useCallback(
     (
-      e: ReactMouseEvent,
+      _e: ReactMouseEvent,
       id: string,
       handleX: 'left' | 'right',
       handleY: 'top' | 'bottom',
@@ -288,37 +421,37 @@ const App: FunctionComponent = () => {
   );
 
   const dragIconStyle: CSSProperties = useMemo(
-    () => ({ ...iconStyles, color: drawMode === null ? 'blue' : 'black' }),
+    () => ({ ...iconStyles, color: drawMode === null ? '#2563eb' : '#475569' }),
     [drawMode],
   );
 
   const penIconStyle: CSSProperties = useMemo(
-    () => ({ ...iconStyles, color: drawMode === 'pen' ? 'blue' : 'black' }),
+    () => ({ ...iconStyles, color: drawMode === 'pen' ? '#2563eb' : '#475569' }),
     [drawMode],
   );
 
   const rectIconStyle: CSSProperties = useMemo(
-    () => ({ ...iconStyles, color: drawMode === 'rect' ? 'blue' : 'black' }),
+    () => ({ ...iconStyles, color: drawMode === 'rect' ? '#2563eb' : '#475569' }),
     [drawMode],
   );
 
   const ellipseIconStyle: CSSProperties = useMemo(
-    () => ({ ...iconStyles, color: drawMode === 'ellipse' ? 'blue' : 'black' }),
+    () => ({ ...iconStyles, color: drawMode === 'ellipse' ? '#2563eb' : '#475569' }),
     [drawMode],
   );
 
   const lineIconStyle: CSSProperties = useMemo(
-    () => ({ ...iconStyles, color: drawMode === 'line' ? 'blue' : 'black' }),
+    () => ({ ...iconStyles, color: drawMode === 'line' ? '#2563eb' : '#475569' }),
     [drawMode],
   );
 
   const cropIconStyle: CSSProperties = useMemo(
-    () => ({ ...iconStyles, color: drawMode === 'crop' ? 'blue' : 'black' }),
+    () => ({ ...iconStyles, color: drawMode === 'crop' ? '#2563eb' : '#475569' }),
     [drawMode],
   );
 
   const textIconStyle: CSSProperties = useMemo(
-    () => ({ ...iconStyles, color: drawMode === 'text' ? 'blue' : 'black' }),
+    () => ({ ...iconStyles, color: drawMode === 'text' ? '#2563eb' : '#475569' }),
     [drawMode],
   );
 
@@ -336,57 +469,6 @@ const App: FunctionComponent = () => {
         return (
           <div style={containerStyle}>
             <div style={flexShrinkStyle}>
-              {drawMode != null && (
-                <>
-                  {(drawMode === 'rect' || drawMode === 'ellipse') && (
-                    <Fragment key="fill">
-                      <button
-                        type="button"
-                        key="fillColor"
-                        style={fillColorStyle}
-                        onClick={toggleFillColorPicker}
-                      />
-                      {fillColorPickerOpen && (
-                        <CompactPicker
-                          key="fillColorPicker"
-                          colors={colors}
-                          onChange={handleFillColorChange}
-                        />
-                      )}
-                    </Fragment>
-                  )}
-                  <input
-                    name="strokeWidth"
-                    key="strokeWidth"
-                    type="number"
-                    value={strokeWidth}
-                    onChange={handleStrokeWidthChange}
-                  />
-                  {drawMode === 'text' && (
-                    <input
-                      name="fontSize"
-                      key="fontSize"
-                      type="number"
-                      value={fontSize}
-                      onChange={handleFontSizeChange}
-                    />
-                  )}
-                  <button
-                    type="button"
-                    key="strokeColor"
-                    style={strokeColorStyle}
-                    onClick={toggleStrokeColorPicker}
-                  />
-                  {strokeColorPickerOpen && (
-                    <CompactPicker
-                      key="strokeColorPicker"
-                      colors={colors}
-                      onChange={handleStrokeColorChange}
-                    />
-                  )}
-                  <span key="spacer" style={spacerStyle} />
-                </>
-              )}
               <DragIcon style={dragIconStyle} onClick={selectDrawMode(null)} />
               <PenIcon style={penIconStyle} onClick={selectDrawMode('pen')} />
               <RectIcon style={rectIconStyle} onClick={selectDrawMode('rect')} />
@@ -397,7 +479,90 @@ const App: FunctionComponent = () => {
               <span style={spacerStyle} />
               <RotateLeftIcon style={iconStyles} onClick={rotate(-90)} />
               <RotateRightIcon style={iconStyles} onClick={rotate(90)} />
+              {drawMode != null && (
+                <>
+                  <span key="spacer" style={spacerStyle} />
+                  {(drawMode === 'rect' || drawMode === 'ellipse') && (
+                    <Fragment key="fill">
+                      <div ref={fillPickerRef} style={pickerAnchorStyle}>
+                        <button
+                          type="button"
+                          key="fillColor"
+                          style={fillColorStyle}
+                          onClick={toggleFillColorPicker}
+                        />
+                      </div>
+                    </Fragment>
+                  )}
+                  <input
+                    name="strokeWidth"
+                    key="strokeWidth"
+                    type="number"
+                    value={strokeWidth}
+                    onChange={handleStrokeWidthChange}
+                    style={numberInputStyle}
+                  />
+                  {drawMode === 'text' && (
+                    <input
+                      name="fontSize"
+                      key="fontSize"
+                      type="number"
+                      value={fontSize}
+                      onChange={handleFontSizeChange}
+                      style={numberInputStyle}
+                    />
+                  )}
+                  <div ref={strokePickerRef} style={pickerAnchorStyle}>
+                    <button
+                      type="button"
+                      key="strokeColor"
+                      style={strokeColorStyle}
+                      onClick={toggleStrokeColorPicker}
+                    />
+                  </div>
+                </>
+              )}
             </div>
+            {fillColorPickerOpen &&
+              fillPickerPosition &&
+              createPortal(
+                <div
+                  ref={fillPopoverRef}
+                  style={{
+                    ...pickerPopoverStyle,
+                    top: fillPickerPosition.top,
+                    left: fillPickerPosition.left,
+                  }}
+                >
+                  <BlockPicker
+                    key="fillColorPicker"
+                    colors={colors}
+                    color={fillColor}
+                    onChange={handleFillColorChange}
+                  />
+                </div>,
+                document.body,
+              )}
+            {strokeColorPickerOpen &&
+              strokePickerPosition &&
+              createPortal(
+                <div
+                  ref={strokePopoverRef}
+                  style={{
+                    ...pickerPopoverStyle,
+                    top: strokePickerPosition.top,
+                    left: strokePickerPosition.left,
+                  }}
+                >
+                  <BlockPicker
+                    key="strokeColorPicker"
+                    colors={colors}
+                    color={strokeColor}
+                    onChange={handleStrokeColorChange}
+                  />
+                </div>,
+                document.body,
+              )}
             <UncontrolledEditor
               drawMode={drawMode}
               allowDrag={drawMode === null}
@@ -428,7 +593,7 @@ const App: FunctionComponent = () => {
                       minWidth={0}
                     >
                       <Drawables
-                        diStrokeWidth={5 * pixelRatio}
+                        diStrokeWidth={3.5 * pixelRatio}
                         drawables={drawables}
                         onSelectDrawable={handleSelectDrawable}
                         selectedDrawable={selectedDrawable}
@@ -440,7 +605,7 @@ const App: FunctionComponent = () => {
                       />
                       <Cropable
                         key="cropable"
-                        diStrokeWidth={5 * pixelRatio}
+                        diStrokeWidth={3.5 * pixelRatio}
                         width={source.width}
                         height={source.height}
                         crop={crop}

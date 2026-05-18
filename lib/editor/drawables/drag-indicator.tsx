@@ -1,27 +1,23 @@
-import type { CSSProperties, FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import type { CSSProperties, FunctionComponent } from 'react';
+import { useCallback, useMemo } from 'react';
+import type {
+  DragIndicatorBoundsOverrideProps,
+  DragIndicatorBoundsProps,
+  DragIndicatorCursorProps,
+  DragIndicatorMouseDownHandler,
+  DragIndicatorResizeHandleMouseDown,
+  DragIndicatorResizeHandlesProps,
+} from './types';
 
-type Props = {
-  id: string;
-  onDragIndicatorMouseDown: (e: ReactMouseEvent<SVGRectElement>) => void;
-  onResizeHandleTopLeftMouseDown?: (e: ReactMouseEvent<SVGCircleElement>) => void;
-  onResizeHandleTopRightMouseDown?: (e: ReactMouseEvent<SVGCircleElement>) => void;
-  onResizeHandleBottomLeftMouseDown?: (e: ReactMouseEvent<SVGCircleElement>) => void;
-  onResizeHandleBottomRightMouseDown?: (e: ReactMouseEvent<SVGCircleElement>) => void;
-  diX: number;
-  diY: number;
-  diWidth: number;
-  diHeight: number;
-  diStrokeWidth: number;
-  selected: boolean;
-  animation?: boolean;
-  diLeft?: number;
-  diRight?: number;
-  diTop?: number;
-  diBottom?: number;
-  inverseCursorHorizontal?: boolean;
-  inverseCursorVertical?: boolean;
-};
+type Props = DragIndicatorBoundsProps &
+  DragIndicatorBoundsOverrideProps &
+  DragIndicatorResizeHandlesProps &
+  DragIndicatorCursorProps & {
+    id: string;
+    onDragIndicatorMouseDown: DragIndicatorMouseDownHandler;
+    selected: boolean;
+    animation?: boolean;
+  };
 
 function inverseDirection(
   inverseCursorHorizontal: boolean | undefined | null,
@@ -62,38 +58,91 @@ const DragIndicator: FunctionComponent<Props> = ({
   diLeft,
   diBottom,
 }) => {
+  const overlayStrokeWidth = useMemo(() => Math.max(0.65, diStrokeWidth * 0.62), [diStrokeWidth]);
+  const handleRadius = useMemo(() => Math.max(4, diStrokeWidth * 1.25), [diStrokeWidth]);
+
   const diStyles: CSSProperties = useMemo(
     () => ({
-      fill: 'transparent',
-      stroke: selected ? '#94a2a4' : 'none',
-      strokeWidth: diStrokeWidth,
-      strokeDasharray: `${diStrokeWidth * 2} ${diStrokeWidth}`,
-      animation: animation ? 'dash 5s linear forwards infinite' : 'none',
+      fill: selected ? 'rgba(100, 116, 139, 0.045)' : 'transparent',
+      stroke: selected ? '#64748b' : 'none',
+      strokeWidth: overlayStrokeWidth,
+      strokeDasharray: `${overlayStrokeWidth * 1.1} ${overlayStrokeWidth * 1.5}`,
+      animation: animation ? 'dash 8s linear forwards infinite' : 'none',
       cursor: 'move',
+      transition: 'fill 180ms ease, stroke 180ms ease',
+      opacity: selected ? 0.95 : 1,
     }),
-    [animation, diStrokeWidth, selected],
+    [animation, overlayStrokeWidth, selected],
   );
 
   const makeResizeHandleStyles = useCallback(
     (direction: 'nw' | 'ne' | 'se' | 'sw') => ({
-      fill: selected ? '#343C3D' : 'none',
-      stroke: 'none',
+      fill: selected ? '#94a3b8' : 'none',
+      stroke: selected ? '#f8fafc' : 'none',
+      strokeWidth: 0.7,
+      transition: 'fill 180ms ease, stroke 180ms ease',
       cursor: `${inverseDirection(inverseCursorHorizontal, inverseCursorVertical, direction)}-resize`,
     }),
     [inverseCursorHorizontal, inverseCursorVertical, selected],
   );
 
-  const diStrokeWidthHalf = useMemo(() => diStrokeWidth / 2, [diStrokeWidth]);
+  const diTopToUse = useMemo(() => diTop ?? diY, [diTop, diY]);
+  const diBottomToUse = useMemo(() => diBottom ?? diY + diHeight, [diBottom, diHeight, diY]);
+  const diLeftToUse = useMemo(() => diLeft ?? diX, [diLeft, diX]);
+  const diRightToUse = useMemo(() => diRight ?? diX + diWidth, [diRight, diWidth, diX]);
 
-  const diTopToUse = useMemo(() => diTop || diY, [diStrokeWidthHalf, diTop, diY]);
-  const diBottomToUse = useMemo(
-    () => diBottom || diY + diHeight,
-    [diBottom, diHeight, diStrokeWidthHalf, diY],
-  );
-  const diLeftToUse = useMemo(() => diLeft || diX, [diLeft, diStrokeWidthHalf, diX]);
-  const diRightToUse = useMemo(
-    () => diRight || diX + diWidth,
-    [diRight, diStrokeWidthHalf, diWidth, diX],
+  const resizeHandles = useMemo(
+    () =>
+      [
+        {
+          key: 'top-left',
+          direction: 'nw' as const,
+          cx: diLeftToUse,
+          cy: diTopToUse,
+          onMouseDown: onResizeHandleTopLeftMouseDown,
+        },
+        {
+          key: 'top-right',
+          direction: 'ne' as const,
+          cx: diRightToUse,
+          cy: diTopToUse,
+          onMouseDown: onResizeHandleTopRightMouseDown,
+        },
+        {
+          key: 'bottom-left',
+          direction: 'sw' as const,
+          cx: diLeftToUse,
+          cy: diBottomToUse,
+          onMouseDown: onResizeHandleBottomLeftMouseDown,
+        },
+        {
+          key: 'bottom-right',
+          direction: 'se' as const,
+          cx: diRightToUse,
+          cy: diBottomToUse,
+          onMouseDown: onResizeHandleBottomRightMouseDown,
+        },
+      ].filter(
+        (
+          handle,
+        ): handle is {
+          key: string;
+          direction: 'nw' | 'ne' | 'sw' | 'se';
+          cx: number;
+          cy: number;
+          onMouseDown: DragIndicatorResizeHandleMouseDown;
+        } => Boolean(handle.onMouseDown),
+      ),
+    [
+      diBottomToUse,
+      diLeftToUse,
+      diRightToUse,
+      diTopToUse,
+      onResizeHandleBottomLeftMouseDown,
+      onResizeHandleBottomRightMouseDown,
+      onResizeHandleTopLeftMouseDown,
+      onResizeHandleTopRightMouseDown,
+    ],
   );
 
   return (
@@ -108,50 +157,18 @@ const DragIndicator: FunctionComponent<Props> = ({
         strokeWidth={diStrokeWidth}
         onMouseDown={onDragIndicatorMouseDown}
       />
-      {onResizeHandleTopLeftMouseDown && (
+      {resizeHandles.map((handle) => (
         <circle
+          key={handle.key}
           pointerEvents="bounding-box"
-          style={makeResizeHandleStyles('nw')}
-          cx={diLeftToUse}
-          cy={diTopToUse}
-          r={diStrokeWidth}
-          onMouseDown={onResizeHandleTopLeftMouseDown}
+          style={makeResizeHandleStyles(handle.direction)}
+          cx={handle.cx}
+          cy={handle.cy}
+          r={handleRadius}
+          onMouseDown={handle.onMouseDown}
           data-id={id}
         />
-      )}
-      {onResizeHandleTopRightMouseDown && (
-        <circle
-          pointerEvents="bounding-box"
-          style={makeResizeHandleStyles('ne')}
-          cx={diRightToUse}
-          cy={diTopToUse}
-          r={diStrokeWidth}
-          onMouseDown={onResizeHandleTopRightMouseDown}
-          data-id={id}
-        />
-      )}
-      {onResizeHandleBottomLeftMouseDown && (
-        <circle
-          pointerEvents="bounding-box"
-          style={makeResizeHandleStyles('sw')}
-          cx={diLeftToUse}
-          cy={diBottomToUse}
-          r={diStrokeWidth}
-          onMouseDown={onResizeHandleBottomLeftMouseDown}
-          data-id={id}
-        />
-      )}
-      {onResizeHandleBottomRightMouseDown && (
-        <circle
-          pointerEvents="bounding-box"
-          style={makeResizeHandleStyles('se')}
-          cx={diRightToUse}
-          cy={diBottomToUse}
-          r={diStrokeWidth}
-          onMouseDown={onResizeHandleBottomRightMouseDown}
-          data-id={id}
-        />
-      )}
+      ))}
     </g>
   );
 };

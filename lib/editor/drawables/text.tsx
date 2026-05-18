@@ -1,20 +1,9 @@
 import type { CSSProperties, FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import DragIndicator from './drag-indicator';
+import type { DrawableSelectableProps, TextDrawableShapeProps } from './types';
 
-type Props = {
-  id: string;
-  text: ReadonlyArray<string>;
-  x: number;
-  y: number;
-  selected: boolean;
-  fontSize: number;
-  fill: string;
-  onSelect: (e: ReactMouseEvent, id: string) => void;
-  onDragIndicatorMouseDown: (e: ReactMouseEvent, id: string) => void;
-  dragIndicatorStrokeWidth: number;
-  canSelectDrawable: boolean;
-};
+type Props = TextDrawableShapeProps & DrawableSelectableProps;
 
 const TextDrawable: FunctionComponent<Props> = ({
   id,
@@ -65,6 +54,15 @@ const TextDrawable: FunctionComponent<Props> = ({
     [canSelectDrawable],
   );
 
+  const keyedText = useMemo(() => {
+    const seen = new Map<string, number>();
+    return text.map((line) => {
+      const occurrence = (seen.get(line) ?? 0) + 1;
+      seen.set(line, occurrence);
+      return { line, key: `${line}-${occurrence}` };
+    });
+  }, [text]);
+
   if (text && !text.length) {
     return null;
   }
@@ -84,8 +82,8 @@ const TextDrawable: FunctionComponent<Props> = ({
         fill={fill}
         style={style}
       >
-        {text.map((line, i) => (
-          <tspan key={`${line}-${i}`} x={x} dy={fontSize}>
+        {keyedText.map(({ line, key }) => (
+          <tspan key={key} x={x} dy={fontSize}>
             {line}
           </tspan>
         ))}

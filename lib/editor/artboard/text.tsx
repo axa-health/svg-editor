@@ -1,24 +1,26 @@
 import type { FunctionComponent, PropsWithChildren } from 'react';
-import { useCallback } from 'react';
-import { useState } from 'react';
-import React, { useMemo } from 'react';
-import { v4 as uuid } from 'uuid';
-import type { Drawable } from '../drawables';
+import { useCallback, useMemo, useState } from 'react';
+import type { Coords } from '../utils';
 import ArtboardBase from './base';
+import { getRectBoundsFromCoords, isBelowMinSize } from './bounds';
+import type {
+  ArtboardCanvasProps,
+  ArtboardDrawCallbacksProps,
+  ArtboardFillProps,
+  ArtboardMinSizeProps,
+  ArtboardTextProps,
+  BoundsInput,
+  DragCurrent,
+  DragStart,
+} from './types';
 
-type Props = PropsWithChildren<{
-  drawingFill: string;
-  fontSize: number;
-  text: ReadonlyArray<string>;
-  width: number;
-  height: number;
-  onDrawEnd: (drawable: Drawable) => void;
-  onDrawStart: () => void;
-  minWidth: number;
-  minHeight: number;
-}>;
-
-type Coords = { x: number; y: number };
+type Props = PropsWithChildren<
+  ArtboardCanvasProps &
+    ArtboardDrawCallbacksProps &
+    ArtboardFillProps &
+    ArtboardMinSizeProps &
+    ArtboardTextProps
+>;
 
 const ArtboardText: FunctionComponent<Props> = ({
   minHeight,
@@ -36,74 +38,48 @@ const ArtboardText: FunctionComponent<Props> = ({
   const [currentCoord, setCurrentCoord] = useState<Coords | undefined>();
 
   const getTextBounds = useCallback(
-    ({
-      startCoord: startCoordToUse,
-      currentCoord: currentCoordToUse,
-    }: {
-      startCoord?: Coords;
-      currentCoord?: Coords;
-    }) => {
-      if (!startCoordToUse || !currentCoordToUse) {
-        return null;
-      }
+    ({ startCoord, currentCoord }: BoundsInput) => {
+      const textBounds = getRectBoundsFromCoords({ startCoord, currentCoord });
 
-      const lowerX = Math.min(startCoordToUse.x, currentCoordToUse.x);
-      const lowerY = Math.min(startCoordToUse.y, currentCoordToUse.y);
-      const higherX = Math.max(startCoordToUse.x, currentCoordToUse.x);
-      const higherY = Math.max(startCoordToUse.y, currentCoordToUse.y);
-
-      const widthToUse = higherX - lowerX;
-      const heightToUse = higherY - lowerY;
-
-      console.log(widthToUse, startCoordToUse, currentCoordToUse);
-      console.log(heightToUse, startCoordToUse, currentCoordToUse);
-
-      if (widthToUse < minWidth && heightToUse < minHeight) {
+      if (!textBounds || isBelowMinSize(textBounds, minWidth, minHeight, 'both')) {
         return null;
       }
 
       return {
-        x: lowerX,
-        y: lowerY,
-        height: heightToUse,
-        width: widthToUse,
+        x: textBounds.x,
+        y: textBounds.y,
+        height: textBounds.height,
+        width: textBounds.width,
       };
     },
     [minHeight, minWidth],
   );
 
   const onMouseDown = useCallback(
-    ({ start }: { start: Coords }) => {
-      console.log('down', start);
+    ({ start }: DragStart) => {
       onDrawStart();
       setStartCoord(start);
     },
     [onDrawStart],
   );
 
-  const onMouseMove = useCallback(({ current, start }: { current: Coords; start: Coords }) => {
-    console.log('move', current, start);
+  const onMouseMove = useCallback(({ current }: DragCurrent) => {
     setCurrentCoord(current);
-    setStartCoord(start);
   }, []);
 
   const onMouseUp = useCallback(
-    ({ current, start }: { current: Coords; start: Coords }) => {
-      console.log('up', start, current);
-      setCurrentCoord(current);
-      setStartCoord(start);
-
+    ({ current, start }: DragCurrent) => {
       const textBounds = getTextBounds({ startCoord: start, currentCoord: current });
 
       if (textBounds) {
-        const id = uuid();
+        const id = crypto.randomUUID();
         onDrawEnd({
           type: 'text',
           id,
           ...textBounds,
-          text: text,
+          text,
           fill: drawingFill,
-          fontSize: fontSize,
+          fontSize,
         });
       }
       setCurrentCoord(undefined);
@@ -116,6 +92,15 @@ const ArtboardText: FunctionComponent<Props> = ({
     () => getTextBounds({ startCoord, currentCoord }),
     [currentCoord, getTextBounds, startCoord],
   );
+
+  const keyedText = useMemo(() => {
+    const seen = new Map<string, number>();
+    return text.map((line) => {
+      const occurrence = (seen.get(line) ?? 0) + 1;
+      seen.set(line, occurrence);
+      return { line, key: `${line}-${occurrence}` };
+    });
+  }, [text]);
 
   return (
     <ArtboardBase
@@ -135,8 +120,8 @@ const ArtboardText: FunctionComponent<Props> = ({
           fontSize={`${fontSize}px`}
           alignmentBaseline="hanging"
         >
-          {text.map((line, i) => (
-            <tspan key={`${line}-${i}`} x={textBounds.x} dy={fontSize}>
+          {keyedText.map(({ line, key }) => (
+            <tspan key={key} x={textBounds.x} dy={fontSize}>
               {line}
             </tspan>
           ))}

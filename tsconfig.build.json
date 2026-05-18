@@ -2,9 +2,9 @@
   "extends": "./tsconfig.json",
   "include": ["lib"],
   "compilerOptions": {
+    "rootDir": "./lib",
     "outDir": "dist",
-    "noEmit": false,
-    "module": "CommonJS",
-    "moduleResolution": "Node"
+    "incremental": true,
+    "noEmit": false
   }
 }

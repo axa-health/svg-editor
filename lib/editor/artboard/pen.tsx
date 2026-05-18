@@ -1,19 +1,12 @@
 import type { FunctionComponent, PropsWithChildren } from 'react';
-import React, { useCallback, useState } from 'react';
-import { v4 as uuid } from 'uuid';
-import type { Drawable } from '../drawables';
+import { useCallback, useState } from 'react';
+import type { Coords } from '../utils';
 import ArtboardBase from './base';
+import type { ArtboardCanvasProps, ArtboardDrawCallbacksProps, ArtboardStrokeProps } from './types';
 
-type Props = PropsWithChildren<{
-  drawingStroke: string;
-  drawingStrokeWidth: number;
-  width: number;
-  height: number;
-  onDrawEnd: (drawable: Drawable) => void;
-  onDrawStart: () => void;
-}>;
-
-type Coords = { x: number; y: number };
+type Props = PropsWithChildren<
+  ArtboardCanvasProps & ArtboardDrawCallbacksProps & ArtboardStrokeProps
+>;
 
 const ArtboardPen: FunctionComponent<Props> = ({
   onDrawEnd,
@@ -43,7 +36,7 @@ const ArtboardPen: FunctionComponent<Props> = ({
       setDrawingPoints((existingDrawingPoints) => {
         const points = [...(existingDrawingPoints || []), current];
 
-        const id = uuid();
+        const id = crypto.randomUUID();
         onDrawEnd({
           type: 'path',
           id,

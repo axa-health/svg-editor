@@ -1,26 +1,13 @@
 import type { CSSProperties, FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import DragIndicator from './drag-indicator';
+import type { DrawableResizableProps, LineDrawableShapeProps } from './types';
 
-type Props = {
-  id: string;
-  x1: number;
-  x2: number;
-  y1: number;
-  y2: number;
-  stroke: string;
-  strokeWidth: number;
-  selected: boolean;
-  onSelect: (e: ReactMouseEvent, id: string) => void;
-  onDragIndicatorMouseDown: (e: ReactMouseEvent, id: string) => void;
-  dragIndicatorStrokeWidth: number;
-  onResizeHandleMouseDown: (
-    e: ReactMouseEvent,
-    id: string,
-    handleX: 'left' | 'right',
-    handleY: 'top' | 'bottom',
-  ) => void;
-  canSelectDrawable: boolean;
+type Props = LineDrawableShapeProps & DrawableResizableProps;
+
+const BASE_INTERACTIVE_STYLE: CSSProperties = {
+  transition: 'opacity 180ms ease, filter 180ms ease',
+  vectorEffect: 'non-scaling-stroke',
 };
 
 const LineDrawable: FunctionComponent<Props> = ({
@@ -59,28 +46,34 @@ const LineDrawable: FunctionComponent<Props> = ({
     (e: ReactMouseEvent) => onDragIndicatorMouseDown(e, id),
     [id, onDragIndicatorMouseDown],
   );
-  const strokeWidthHalf = useMemo(() => strokeWidth / 2, [strokeWidth]);
+  const strokeWidthHalf = strokeWidth / 2;
 
-  const lowerX = useMemo(() => Math.min(x1, x2), [x1, x2]);
-  const higherX = useMemo(() => Math.max(x1, x2), [x1, x2]);
-  const lowerY = useMemo(() => Math.min(y1, y2), [y1, y2]);
-  const higherY = useMemo(() => Math.max(y1, y2), [y1, y2]);
-  const diX = useMemo(() => lowerX - strokeWidthHalf, [lowerX, strokeWidthHalf]);
-  const diY = useMemo(() => lowerY - strokeWidthHalf, [lowerY, strokeWidthHalf]);
-  const diWidth = useMemo(() => higherX - lowerX + strokeWidth, [higherX, lowerX, strokeWidth]);
-  const diHeight = useMemo(() => higherY - lowerY + strokeWidth, [higherY, lowerY, strokeWidth]);
+  const lowerX = Math.min(x1, x2);
+  const higherX = Math.max(x1, x2);
+  const lowerY = Math.min(y1, y2);
+  const higherY = Math.max(y1, y2);
 
-  const isDiHorizontalInverse = useMemo(() => lowerX !== x1, [lowerX, x1]);
-  const diHorizontalInverse = useMemo(
-    () => (isDiHorizontalInverse ? -1 : 1),
-    [isDiHorizontalInverse],
-  );
+  const diX = lowerX - strokeWidthHalf;
+  const diY = lowerY - strokeWidthHalf;
+  const diWidth = higherX - lowerX + strokeWidth;
+  const diHeight = higherY - lowerY + strokeWidth;
 
-  const isDiVerticalInverse = useMemo(() => lowerY !== y1, [lowerY, y1]);
-  const diVerticalInverse = useMemo(() => (isDiVerticalInverse ? -1 : 1), [isDiVerticalInverse]);
+  const isDiHorizontalInverse = lowerX !== x1;
+  const diHorizontalInverse = isDiHorizontalInverse ? -1 : 1;
+
+  const isDiVerticalInverse = lowerY !== y1;
+  const diVerticalInverse = isDiVerticalInverse ? -1 : 1;
+
   const style: CSSProperties = useMemo(
-    () => ({ cursor: canSelectDrawable ? 'pointer' : undefined }),
-    [canSelectDrawable],
+    () => ({
+      ...BASE_INTERACTIVE_STYLE,
+      cursor: canSelectDrawable ? 'pointer' : 'default',
+      opacity: selected ? 0.97 : 0.9,
+      filter: selected ? 'drop-shadow(0 0 2px rgba(100, 116, 139, 0.16))' : 'none',
+      strokeLinecap: 'round',
+      strokeLinejoin: 'round',
+    }),
+    [canSelectDrawable, selected],
   );
 
   return (

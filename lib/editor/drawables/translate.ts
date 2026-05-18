@@ -1,4 +1,4 @@
-import type { Drawable } from '.';
+import type { Drawable } from './types';
 
 export default function translateDrawable<T extends Drawable>(
   drawable: T,

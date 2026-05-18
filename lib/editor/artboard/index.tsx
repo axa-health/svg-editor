@@ -1,13 +1,12 @@
 import type { FunctionComponent, PropsWithChildren } from 'react';
-import React from 'react';
-import ArtboardPen from './pen';
-import ArtboardRect from './rect';
-import ArtboardEllipse from './ellipse';
-import ArtboardLine from './line';
+import type { Drawable } from '../drawables';
 import type { Crop } from './crop';
 import ArtboardCrop from './crop';
+import ArtboardEllipse from './ellipse';
+import ArtboardLine from './line';
+import ArtboardPen from './pen';
+import ArtboardRect from './rect';
 import ArtboardText from './text';
-import type { Drawable } from '../drawables';
 
 type Props = PropsWithChildren<{
   drawMode: null | 'pen' | 'rect' | 'ellipse' | 'line' | 'crop' | 'text';
@@ -26,33 +25,17 @@ type Props = PropsWithChildren<{
   text: ReadonlyArray<string>;
 }>;
 
-const ArtboardComponent: FunctionComponent<Props> = (props) => {
-  let Artboard;
+const artboards: Record<NonNullable<Props['drawMode']>, FunctionComponent<Props>> = {
+  pen: ArtboardPen,
+  rect: ArtboardRect,
+  text: ArtboardText,
+  ellipse: ArtboardEllipse,
+  line: ArtboardLine,
+  crop: ArtboardCrop,
+};
 
-  switch (props.drawMode) {
-    case 'pen':
-      Artboard = ArtboardPen;
-      break;
-    case 'rect':
-      Artboard = ArtboardRect;
-      break;
-    case 'text':
-      Artboard = ArtboardText;
-      break;
-    case 'ellipse':
-      Artboard = ArtboardEllipse;
-      break;
-    case 'line':
-      Artboard = ArtboardLine;
-      break;
-    case 'crop':
-      Artboard = ArtboardCrop;
-      break;
-    default:
-      if (props.drawMode) {
-        console.warn('Unknown drawMode', props.drawMode); // eslint-disable-line
-      }
-  }
+const ArtboardComponent: FunctionComponent<Props> = (props) => {
+  const Artboard = props.drawMode ? artboards[props.drawMode] : undefined;
 
   if (!Artboard) {
     return <>{props.children}</>;
