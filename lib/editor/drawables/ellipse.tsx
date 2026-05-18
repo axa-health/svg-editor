@@ -1,28 +1,9 @@
 import type { CSSProperties, FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback, useMemo } from 'react';
 import DragIndicator from './drag-indicator';
+import type { DrawableResizableProps, EllipseDrawableShapeProps } from './types';
 
-type Props = {
-  id: string;
-  cx: number;
-  cy: number;
-  rx: number;
-  ry: number;
-  fill: string;
-  stroke: string;
-  strokeWidth: number;
-  selected: boolean;
-  onSelect: (e: ReactMouseEvent, id: string) => void;
-  onDragIndicatorMouseDown: (e: ReactMouseEvent, id: string) => void;
-  dragIndicatorStrokeWidth: number;
-  onResizeHandleMouseDown: (
-    e: ReactMouseEvent,
-    id: string,
-    handleX: 'left' | 'right',
-    handleY: 'top' | 'bottom',
-  ) => void;
-  canSelectDrawable: boolean;
-};
+type Props = EllipseDrawableShapeProps & DrawableResizableProps;
 
 const EllipseDrawable: FunctionComponent<Props> = ({
   id,

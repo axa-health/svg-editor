@@ -25,33 +25,17 @@ type Props = PropsWithChildren<{
   text: ReadonlyArray<string>;
 }>;
 
-const ArtboardComponent: FunctionComponent<Props> = (props) => {
-  let Artboard: FunctionComponent<Props> | undefined;
+const artboards: Record<NonNullable<Props['drawMode']>, FunctionComponent<Props>> = {
+  pen: ArtboardPen,
+  rect: ArtboardRect,
+  text: ArtboardText,
+  ellipse: ArtboardEllipse,
+  line: ArtboardLine,
+  crop: ArtboardCrop,
+};
 
-  switch (props.drawMode) {
-    case 'pen':
-      Artboard = ArtboardPen;
-      break;
-    case 'rect':
-      Artboard = ArtboardRect;
-      break;
-    case 'text':
-      Artboard = ArtboardText;
-      break;
-    case 'ellipse':
-      Artboard = ArtboardEllipse;
-      break;
-    case 'line':
-      Artboard = ArtboardLine;
-      break;
-    case 'crop':
-      Artboard = ArtboardCrop;
-      break;
-    default:
-      if (props.drawMode) {
-        console.warn('Unknown drawMode', props.drawMode);
-      }
-  }
+const ArtboardComponent: FunctionComponent<Props> = (props) => {
+  const Artboard = props.drawMode ? artboards[props.drawMode] : undefined;
 
   if (!Artboard) {
     return <>{props.children}</>;

@@ -14,23 +14,23 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: git checkout
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
 
       - name: setup node
-        uses: actions/setup-node@60edb5dd545a775178fba8601fb3fc6ca85b88d3
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version-file: '.nvmrc'
 
       - name: Install pnpm
-        uses: pnpm/action-setup@d882d12c64e032187b2edb46d3a0261750f52379
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093
 
       - name: Install dependencies
         run: pnpm install
 
       - name: create and publish versions
-        uses: changesets/action@d55b4344f12be490944665ba10c4416dec583fb0
+        uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b
         with:
           publish: pnpm release
         env:

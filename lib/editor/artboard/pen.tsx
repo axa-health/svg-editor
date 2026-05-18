@@ -1,18 +1,12 @@
 import type { FunctionComponent, PropsWithChildren } from 'react';
 import { useCallback, useState } from 'react';
-import type { Drawable } from '../drawables';
+import type { Coords } from '../utils';
 import ArtboardBase from './base';
+import type { ArtboardCanvasProps, ArtboardDrawCallbacksProps, ArtboardStrokeProps } from './types';
 
-type Props = PropsWithChildren<{
-  drawingStroke: string;
-  drawingStrokeWidth: number;
-  width: number;
-  height: number;
-  onDrawEnd: (drawable: Drawable) => void;
-  onDrawStart: () => void;
-}>;
-
-type Coords = { x: number; y: number };
+type Props = PropsWithChildren<
+  ArtboardCanvasProps & ArtboardDrawCallbacksProps & ArtboardStrokeProps
+>;
 
 const ArtboardPen: FunctionComponent<Props> = ({
   onDrawEnd,

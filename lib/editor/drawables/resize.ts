@@ -1,12 +1,12 @@
-import type { Drawable } from '.';
+import type { Drawable, ResizeHandleX, ResizeHandleY } from './types';
 
 const rectMinWidth = 10;
 const ellipseMinWidth = 10;
 
 export default function resizeDrawable<T extends Drawable>(
   drawable: T,
-  handleX: 'left' | 'right',
-  handleY: 'top' | 'bottom',
+  handleX: ResizeHandleX,
+  handleY: ResizeHandleY,
   newX: number,
   newY: number,
 ): T {

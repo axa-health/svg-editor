@@ -1,21 +1,26 @@
 import type { FunctionComponent, PropsWithChildren } from 'react';
 import { useCallback, useMemo, useState } from 'react';
-import type { Drawable } from '../drawables';
+import type { Coords } from '../utils';
 import ArtboardBase from './base';
+import { getRectBoundsFromCoords, isBelowMinSize } from './bounds';
+import type {
+  ArtboardCanvasProps,
+  ArtboardDrawCallbacksProps,
+  ArtboardFillProps,
+  ArtboardMinSizeProps,
+  ArtboardStrokeProps,
+  BoundsInput,
+  DragCurrent,
+  DragStart,
+} from './types';
 
-type Props = PropsWithChildren<{
-  drawingFill: string;
-  drawingStroke: string;
-  drawingStrokeWidth: number;
-  width: number;
-  height: number;
-  onDrawEnd: (drawable: Drawable) => void;
-  onDrawStart: () => void;
-  minWidth: number;
-  minHeight: number;
-}>;
-
-type Coords = { x: number; y: number };
+type Props = PropsWithChildren<
+  ArtboardCanvasProps &
+    ArtboardDrawCallbacksProps &
+    ArtboardFillProps &
+    ArtboardStrokeProps &
+    ArtboardMinSizeProps
+>;
 
 const ArtboardRect: FunctionComponent<Props> = ({
   width,
@@ -33,60 +38,32 @@ const ArtboardRect: FunctionComponent<Props> = ({
   const [currentCoord, setCurrentCoord] = useState<Coords | undefined>();
 
   const getRectBounds = useCallback(
-    ({
-      startCoord: startCoordToUse,
-      currentCoord: currentCoordToUse,
-    }: {
-      startCoord?: Coords;
-      currentCoord?: Coords;
-    }) => {
-      if (!startCoordToUse || !currentCoordToUse) {
+    ({ startCoord, currentCoord }: BoundsInput) => {
+      const rectBounds = getRectBoundsFromCoords({ startCoord, currentCoord });
+
+      if (!rectBounds || isBelowMinSize(rectBounds, minWidth, minHeight)) {
         return null;
       }
 
-      const lowerX = Math.min(startCoordToUse.x, currentCoordToUse.x);
-      const lowerY = Math.min(startCoordToUse.y, currentCoordToUse.y);
-      const higherX = Math.max(startCoordToUse.x, currentCoordToUse.x);
-      const higherY = Math.max(startCoordToUse.y, currentCoordToUse.y);
-
-      const widthToUse = higherX - lowerX;
-      const heightToUse = higherY - lowerY;
-
-      if (widthToUse === 0 || heightToUse === 0) {
-        return null;
-      }
-      if (widthToUse < minWidth || heightToUse < minHeight) {
-        return null;
-      }
-
-      return {
-        x: lowerX,
-        y: lowerY,
-        width: widthToUse,
-        height: heightToUse,
-      };
+      return rectBounds;
     },
     [minHeight, minWidth],
   );
 
   const onMouseDown = useCallback(
-    ({ start }: { start: Coords }) => {
+    ({ start }: DragStart) => {
       onDrawStart();
       setStartCoord(start);
     },
     [onDrawStart],
   );
 
-  const onMouseMove = useCallback(({ current, start }: { current: Coords; start: Coords }) => {
+  const onMouseMove = useCallback(({ current }: DragCurrent) => {
     setCurrentCoord(current);
-    setStartCoord(start);
   }, []);
 
   const onMouseUp = useCallback(
-    ({ current, start }: { current: Coords; start: Coords }) => {
-      setCurrentCoord(current);
-      setStartCoord(start);
-
+    ({ current, start }: DragCurrent) => {
       const rectBounds = getRectBounds({ startCoord: start, currentCoord: current });
 
       if (rectBounds) {

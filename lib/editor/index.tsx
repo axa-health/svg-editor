@@ -6,6 +6,7 @@ import type {
   WheelEvent as ReactWheelEvent,
 } from 'react';
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createSvgPointTransformer } from './utils';
 
 type Crop = {
   x: number;
@@ -102,7 +103,6 @@ const Editor: FunctionComponent<Props> = ({
 
   const recalcPixelRatio = useCallback(() => {
     if (!referenceRectZoom.current) {
-      console.log("Missing referenceRectZoom, can't calc pixelRatio..."); // eslint-disable-line no-console
       return;
     }
     setHeightRatioToUse(height / referenceRectZoom.current.getBoundingClientRect().height);
@@ -112,26 +112,14 @@ const Editor: FunctionComponent<Props> = ({
     (e: ReactMouseEvent<SVGElement>) => {
       if (allowDrag) {
         if (!referenceRectNoZoom.current) {
-          console.error('ReferenceRectNoZoom not available!'); // eslint-disable-line no-console
           return;
         }
 
-        const svg = referenceRectNoZoom.current.closest('svg');
+        const transformPoint = createSvgPointTransformer(referenceRectNoZoom.current);
 
-        if (!svg) {
-          console.error('svg not found'); // eslint-disable-line no-console
+        if (!transformPoint) {
           return;
         }
-
-        const inverseMatrix = referenceRectNoZoom.current.getScreenCTM()?.inverse();
-        const transformPoint = ({ clientX, clientY }: { clientX: number; clientY: number }) => {
-          let pt = svg.createSVGPoint();
-          pt.x = clientX;
-          pt.y = clientY;
-          pt = pt.matrixTransform(inverseMatrix);
-
-          return { x: pt.x, y: pt.y };
-        };
 
         e.preventDefault();
         e.stopPropagation();
@@ -228,7 +216,7 @@ const Editor: FunctionComponent<Props> = ({
         {`
             @keyframes dash {
               to {
-                stroke-dashoffset: 100;
+                stroke-dashoffset: 96;
               }
             }
           `}

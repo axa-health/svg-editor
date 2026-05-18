@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "start": "vite",
-    "release": "pnpm build && pnpm changeset publish",
+    "release": "pnpm lint && pnpm check:types && pnpm build && pnpm changeset publish",
     "build": "tsdown",
-    "lint": "biome lint .",
+    "lint": "tsc --noEmit && biome lint .",
     "attw": "attw --pack",
     "check:types": "pnpm build && pnpm attw",
     "format": "biome format --write .",

@@ -19,9 +19,9 @@ const UncontrolledEditor: FunctionComponent<Props> = ({
   initialTranslateX,
   ...props
 }) => {
-  const [zoom, setZoom] = useState(initialZoom || 1);
-  const [translateX, setTranslateX] = useState(initialTranslateX || 0);
-  const [translateY, setTranslateY] = useState(initialTranslateY || 0);
+  const [zoom, setZoom] = useState(initialZoom ?? 1);
+  const [translateX, setTranslateX] = useState(initialTranslateX ?? 0);
+  const [translateY, setTranslateY] = useState(initialTranslateY ?? 0);
 
   const handleDrag = useCallback((x: number, y: number) => {
     setTranslateY(y);

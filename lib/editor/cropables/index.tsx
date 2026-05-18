@@ -1,33 +1,21 @@
 import type { FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import type { ResizeHandleX, ResizeHandleY } from '../drawables/types';
+import { createSvgPointTransformer } from '../utils';
 import Square from './square';
+import type { Crop, CropResizeHandler, CropTranslateHandler } from './types';
 
-export type Crop = {
-  x: number;
-  y: number;
-  height: number;
-  width: number;
-};
+export type { Crop } from './types';
 
 type Props = {
   height: number;
   width: number;
   canTransformCrop: boolean;
-  onCropTranslate: (x: number, y: number) => void;
-  onCropTranslateEnd?: (x: number, y: number) => void;
+  onCropTranslate: CropTranslateHandler;
+  onCropTranslateEnd?: CropTranslateHandler;
   onRemoveCrop?: () => void;
-  onResizeCrop: (
-    handleX: 'left' | 'right',
-    handleY: 'top' | 'bottom',
-    newX: number,
-    newY: number,
-  ) => void;
-  onResizeCropEnd?: (
-    handleX: 'left' | 'right',
-    handleY: 'top' | 'bottom',
-    newX: number,
-    newY: number,
-  ) => void;
+  onResizeCrop: CropResizeHandler;
+  onResizeCropEnd?: CropResizeHandler;
   onConfirmCrop?: () => void;
   crop?: Crop;
   diStrokeWidth: number;
@@ -86,27 +74,14 @@ const Cropables: FunctionComponent<Props> = ({
       }
 
       if (!referenceRect.current) {
-        console.error('referenceRect not available!');
         return;
       }
 
-      const svg = referenceRect.current.closest('svg');
+      const transformPoint = createSvgPointTransformer(referenceRect.current);
 
-      if (!svg) {
-        console.error('svg not found');
+      if (!transformPoint) {
         return;
       }
-
-      const inverseMatrix = referenceRect.current?.getScreenCTM()?.inverse();
-
-      const transformPoint = ({ clientX, clientY }: { clientX: number; clientY: number }) => {
-        let pt = svg.createSVGPoint();
-        pt.x = clientX;
-        pt.y = clientY;
-        pt = pt.matrixTransform(inverseMatrix);
-
-        return { x: pt.x, y: pt.y };
-      };
 
       e.stopPropagation();
 
@@ -138,7 +113,7 @@ const Cropables: FunctionComponent<Props> = ({
   );
 
   const handleResizeHandleMouseDown = useCallback(
-    (e: ReactMouseEvent, handleX: 'left' | 'right', handleY: 'top' | 'bottom') => {
+    (e: ReactMouseEvent, handleX: ResizeHandleX, handleY: ResizeHandleY) => {
       if (!canTransformCrop) {
         return;
       }
@@ -146,27 +121,14 @@ const Cropables: FunctionComponent<Props> = ({
       e.stopPropagation();
 
       if (!referenceRect.current) {
-        console.error('Reference rect not available!');
         return;
       }
 
-      const svg = referenceRect.current.closest('svg');
+      const transformPoint = createSvgPointTransformer(referenceRect.current);
 
-      if (!svg) {
-        console.error('svg not found');
+      if (!transformPoint) {
         return;
       }
-
-      const inverseMatrix = referenceRect.current?.getScreenCTM()?.inverse();
-
-      const transformPoint = ({ clientX, clientY }: { clientX: number; clientY: number }) => {
-        let pt = svg.createSVGPoint();
-        pt.x = clientX;
-        pt.y = clientY;
-        pt = pt.matrixTransform(inverseMatrix);
-
-        return { x: pt.x, y: pt.y };
-      };
 
       const mouseMoveHandler = (e2: MouseEvent) => {
         const newCoords = transformPoint(e2);

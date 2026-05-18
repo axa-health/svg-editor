@@ -1,21 +1,9 @@
 import type { FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback } from 'react';
 import DragIndicator from '../drawables/drag-indicator';
+import type { CropBoxProps, CropInteractionProps } from './types';
 
-type Props = {
-  id: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  onDragIndicatorMouseDown: (e: ReactMouseEvent) => void;
-  onResizeHandleMouseDown: (
-    e: ReactMouseEvent,
-    handleX: 'left' | 'right',
-    handleY: 'top' | 'bottom',
-  ) => void;
-  diStrokeWidth: number;
-};
+type Props = CropBoxProps & CropInteractionProps;
 
 const RectCrop: FunctionComponent<Props> = ({
   x,
@@ -47,18 +35,11 @@ const RectCrop: FunctionComponent<Props> = ({
     [onResizeHandleMouseDown],
   );
 
-  const handleDragIndicatorMouseDown = useCallback(
-    (e: ReactMouseEvent) => {
-      onDragIndicatorMouseDown(e);
-    },
-    [onDragIndicatorMouseDown],
-  );
-
   return (
     <g pointerEvents="bounding-box">
       <DragIndicator
         id={id}
-        onDragIndicatorMouseDown={handleDragIndicatorMouseDown}
+        onDragIndicatorMouseDown={onDragIndicatorMouseDown}
         onResizeHandleTopLeftMouseDown={handleResizeHandleTopLeftMouseDown}
         onResizeHandleTopRightMouseDown={handleResizeHandleTopRightMouseDown}
         onResizeHandleBottomLeftMouseDown={handleResizeHandleBottomLeftMouseDown}
