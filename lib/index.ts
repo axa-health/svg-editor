@@ -1,3 +1,4 @@
+export type { RenderProps } from './background-source';
 export { default as BackgroundSource } from './background-source';
 export { default as Editor, PixelRatioContext } from './editor';
 export { default as Artboard } from './editor/artboard';
