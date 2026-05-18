@@ -1,6 +1,5 @@
 import type { FunctionComponent, PropsWithChildren } from 'react';
-import React, { useCallback, useState } from 'react';
-import { v4 as uuid } from 'uuid';
+import { useCallback, useState } from 'react';
 import type { Drawable } from '../drawables';
 import ArtboardBase from './base';
 
@@ -43,7 +42,7 @@ const ArtboardPen: FunctionComponent<Props> = ({
       setDrawingPoints((existingDrawingPoints) => {
         const points = [...(existingDrawingPoints || []), current];
 
-        const id = uuid();
+        const id = crypto.randomUUID();
         onDrawEnd({
           type: 'path',
           id,

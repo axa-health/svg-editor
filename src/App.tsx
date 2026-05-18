@@ -4,28 +4,28 @@ import type {
   FunctionComponent,
   MouseEvent as ReactMouseEvent,
 } from 'react';
-import React, { Fragment, useCallback, useMemo, useState } from 'react';
+import { Fragment, useCallback, useMemo, useState } from 'react';
+import type { ColorResult } from 'react-color';
+import { CompactPicker } from 'react-color';
 import {
   MdCrop as CropIcon,
-  MdCropLandscape as RectIcon,
-  MdEdit as PenIcon,
-  MdFormatColorText as TextIcon,
   MdOpenWith as DragIcon,
   MdPanoramaFishEye as EllipseIcon,
   MdRemove as LineIcon,
+  MdEdit as PenIcon,
+  MdCropLandscape as RectIcon,
   MdRotateLeft as RotateLeftIcon,
   MdRotateRight as RotateRightIcon,
+  MdFormatColorText as TextIcon,
 } from 'react-icons/md';
-import type { ColorResult } from 'react-color';
-import { CompactPicker } from 'react-color';
-import UncontrolledEditor from '../lib/editor/uncontrolled';
 import BackgroundSource from '../lib/background-source';
-import Drawables, { type Drawable } from '../lib/editor/drawables';
-import Cropable, { type Crop } from '../lib/editor/cropables';
+import { PixelRatioContext } from '../lib/editor';
 import Artboard from '../lib/editor/artboard';
+import Cropable, { type Crop } from '../lib/editor/cropables';
+import Drawables, { type Drawable } from '../lib/editor/drawables';
 import resizeDrawable from '../lib/editor/drawables/resize';
 import translateDrawable from '../lib/editor/drawables/translate';
-import { PixelRatioContext } from '../lib/editor';
+import UncontrolledEditor from '../lib/editor/uncontrolled';
 
 const colorStyle: CSSProperties = {
   borderRadius: '3px',
@@ -170,7 +170,7 @@ const App: FunctionComponent = () => {
 
   const handleResizeDrawable = useCallback(
     (
-      e: ReactMouseEvent,
+      _e: ReactMouseEvent,
       id: string,
       handleX: 'left' | 'right',
       handleY: 'top' | 'bottom',

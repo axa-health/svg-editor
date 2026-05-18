@@ -1,13 +1,12 @@
 import type { FunctionComponent, PropsWithChildren } from 'react';
-import React from 'react';
-import ArtboardPen from './pen';
-import ArtboardRect from './rect';
-import ArtboardEllipse from './ellipse';
-import ArtboardLine from './line';
+import type { Drawable } from '../drawables';
 import type { Crop } from './crop';
 import ArtboardCrop from './crop';
+import ArtboardEllipse from './ellipse';
+import ArtboardLine from './line';
+import ArtboardPen from './pen';
+import ArtboardRect from './rect';
 import ArtboardText from './text';
-import type { Drawable } from '../drawables';
 
 type Props = PropsWithChildren<{
   drawMode: null | 'pen' | 'rect' | 'ellipse' | 'line' | 'crop' | 'text';
@@ -27,7 +26,7 @@ type Props = PropsWithChildren<{
 }>;
 
 const ArtboardComponent: FunctionComponent<Props> = (props) => {
-  let Artboard;
+  let Artboard: FunctionComponent<Props> | undefined;
 
   switch (props.drawMode) {
     case 'pen':
@@ -50,7 +49,7 @@ const ArtboardComponent: FunctionComponent<Props> = (props) => {
       break;
     default:
       if (props.drawMode) {
-        console.warn('Unknown drawMode', props.drawMode); // eslint-disable-line
+        console.warn('Unknown drawMode', props.drawMode);
       }
   }
 

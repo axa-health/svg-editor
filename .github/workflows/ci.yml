@@ -14,41 +14,17 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: git checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871
         with:
           fetch-depth: 0
 
       - name: setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@60edb5dd545a775178fba8601fb3fc6ca85b88d3
         with:
           node-version-file: '.nvmrc'
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        id: pnpm-install
-        with:
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        run: |
-          echo "::set-output name=pnpm_cache_dir::$(pnpm store path)"
-
-      - uses: actions/cache@v4
-        name: Setup pnpm cache
-        with:
-          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Create .npmrc
-        run: |
-          cat << EOF > "$HOME/.npmrc"
-            //registry.npmjs.org/:_authToken=$NPM_TOKEN
-          EOF
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        uses: pnpm/action-setup@d882d12c64e032187b2edb46d3a0261750f52379
 
       - name: Install dependencies
         run: pnpm install
@@ -62,11 +38,5 @@ jobs:
           pnpm changeset publish --tag canary
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Post published version to GitHub checks
-        run: |
-          name=$(jq -r .name package.json)
-          version=$(jq -r .version package.json)
-          npx action-status --context=$name --state=success --description=$version --url="https://unpkg.com/$name@$version/"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

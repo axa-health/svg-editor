@@ -1,5 +1,5 @@
 import type { FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import Square from './square';
 
 export type Crop = {
@@ -86,14 +86,14 @@ const Cropables: FunctionComponent<Props> = ({
       }
 
       if (!referenceRect.current) {
-        console.error('referenceRect not available!'); // eslint-disable-line no-console
+        console.error('referenceRect not available!');
         return;
       }
 
       const svg = referenceRect.current.closest('svg');
 
       if (!svg) {
-        console.error('svg not found'); // eslint-disable-line no-console
+        console.error('svg not found');
         return;
       }
 
@@ -146,14 +146,14 @@ const Cropables: FunctionComponent<Props> = ({
       e.stopPropagation();
 
       if (!referenceRect.current) {
-        console.error('Reference rect not available!'); // eslint-disable-line no-console
+        console.error('Reference rect not available!');
         return;
       }
 
       const svg = referenceRect.current.closest('svg');
 
       if (!svg) {
-        console.error('svg not found'); // eslint-disable-line no-console
+        console.error('svg not found');
         return;
       }
 

@@ -1,5 +1,5 @@
 import type { CSSProperties, FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import DragIndicator from './drag-indicator';
 
 type Props = {
@@ -69,7 +69,7 @@ const EllipseDrawable: FunctionComponent<Props> = ({
 
   const handleDragIndicatorMouseDown = useCallback(
     (e: ReactMouseEvent) => onDragIndicatorMouseDown(e, id),
-    [],
+    [id, onDragIndicatorMouseDown],
   );
 
   const strokeWidthHalf = useMemo(() => strokeWidth / 2, [strokeWidth]);

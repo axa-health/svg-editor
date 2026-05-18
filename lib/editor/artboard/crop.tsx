@@ -1,5 +1,5 @@
 import type { FunctionComponent, PropsWithChildren } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import ArtboardBase from './base';
 
 export type Crop = {

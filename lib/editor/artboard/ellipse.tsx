@@ -1,6 +1,5 @@
 import type { FunctionComponent, PropsWithChildren } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
-import { v4 as uuid } from 'uuid';
+import { useCallback, useMemo, useState } from 'react';
 import type { Drawable } from '../drawables';
 import ArtboardBase from './base';
 
@@ -91,7 +90,7 @@ const ArtboardEllipse: FunctionComponent<Props> = ({
       const ellipseBounds = getEllipseBounds({ startCoord: start, currentCoord: current });
 
       if (ellipseBounds) {
-        const id = uuid();
+        const id = crypto.randomUUID();
         onDrawEnd({
           type: 'ellipse',
           id,

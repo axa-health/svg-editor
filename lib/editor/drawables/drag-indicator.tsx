@@ -1,5 +1,5 @@
 import type { CSSProperties, FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 type Props = {
   id: string;
@@ -83,18 +83,10 @@ const DragIndicator: FunctionComponent<Props> = ({
     [inverseCursorHorizontal, inverseCursorVertical, selected],
   );
 
-  const diStrokeWidthHalf = useMemo(() => diStrokeWidth / 2, [diStrokeWidth]);
-
-  const diTopToUse = useMemo(() => diTop || diY, [diStrokeWidthHalf, diTop, diY]);
-  const diBottomToUse = useMemo(
-    () => diBottom || diY + diHeight,
-    [diBottom, diHeight, diStrokeWidthHalf, diY],
-  );
-  const diLeftToUse = useMemo(() => diLeft || diX, [diLeft, diStrokeWidthHalf, diX]);
-  const diRightToUse = useMemo(
-    () => diRight || diX + diWidth,
-    [diRight, diStrokeWidthHalf, diWidth, diX],
-  );
+  const diTopToUse = useMemo(() => diTop || diY, [diTop, diY]);
+  const diBottomToUse = useMemo(() => diBottom || diY + diHeight, [diBottom, diHeight, diY]);
+  const diLeftToUse = useMemo(() => diLeft || diX, [diLeft, diX]);
+  const diRightToUse = useMemo(() => diRight || diX + diWidth, [diRight, diWidth, diX]);
 
   return (
     <g>

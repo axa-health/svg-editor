@@ -1,11 +1,11 @@
 import type {
+  CSSProperties,
   FunctionComponent,
-  MouseEvent as ReactMouseEvent,
   PropsWithChildren,
+  MouseEvent as ReactMouseEvent,
   WheelEvent as ReactWheelEvent,
 } from 'react';
-import { useEffect } from 'react';
-import React, { createContext, useCallback, useMemo, useRef, useState } from 'react';
+import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type Crop = {
   x: number;
@@ -30,7 +30,7 @@ export type Props = PropsWithChildren<{
   onDragStart?: () => void;
   onDragEnd?: () => void;
   onDrag: (x: number, y: number) => void;
-  canvasStyle?: any;
+  canvasStyle?: CSSProperties;
   canvasClassName?: string;
   drawMode?: string | null;
   heightRatio?: number;
@@ -140,7 +140,7 @@ const Editor: FunctionComponent<Props> = ({
           onDragStart();
         }
 
-        let lastCoords = transformPoint(e);
+        const lastCoords = transformPoint(e);
 
         const mouseMoveHandler = (e2: MouseEvent) => {
           const newCoords = transformPoint(e2);
@@ -176,7 +176,7 @@ const Editor: FunctionComponent<Props> = ({
 
   const canvasStyleToUse = useMemo(
     () => ({
-      cursor: allowDrag ? 'move' : null,
+      cursor: allowDrag ? 'move' : undefined,
       ...canvasStyle,
     }),
     [allowDrag, canvasStyle],
@@ -223,6 +223,7 @@ const Editor: FunctionComponent<Props> = ({
       style={canvasStyleToUse}
       className={canvasClassName}
     >
+      <title>SVG editor canvas</title>
       <style>
         {`
             @keyframes dash {

@@ -1,5 +1,5 @@
 import type { CSSProperties, FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import DragIndicator from './drag-indicator';
 
 type Props = {

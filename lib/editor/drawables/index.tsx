@@ -1,5 +1,5 @@
 import type { FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
-import React, { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import EllipseDrawable from './ellipse';
 import LineDrawable from './line';
 import PathDrawable from './path';

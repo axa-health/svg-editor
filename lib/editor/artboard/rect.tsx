@@ -1,7 +1,5 @@
 import type { FunctionComponent, PropsWithChildren } from 'react';
-import { useCallback } from 'react';
-import React, { useMemo, useState } from 'react';
-import { v4 as uuid } from 'uuid';
+import { useCallback, useMemo, useState } from 'react';
 import type { Drawable } from '../drawables';
 import ArtboardBase from './base';
 
@@ -92,7 +90,7 @@ const ArtboardRect: FunctionComponent<Props> = ({
       const rectBounds = getRectBounds({ startCoord: start, currentCoord: current });
 
       if (rectBounds) {
-        const id = uuid();
+        const id = crypto.randomUUID();
         onDrawEnd({
           type: 'rect',
           id,

@@ -1,8 +1,5 @@
 import type { FunctionComponent, PropsWithChildren } from 'react';
-import { useCallback } from 'react';
-import { useState } from 'react';
-import React, { useMemo } from 'react';
-import { v4 as uuid } from 'uuid';
+import { useCallback, useMemo, useState } from 'react';
 import type { Drawable } from '../drawables';
 import ArtboardBase from './base';
 
@@ -96,7 +93,7 @@ const ArtboardText: FunctionComponent<Props> = ({
       const textBounds = getTextBounds({ startCoord: start, currentCoord: current });
 
       if (textBounds) {
-        const id = uuid();
+        const id = crypto.randomUUID();
         onDrawEnd({
           type: 'text',
           id,
@@ -117,6 +114,15 @@ const ArtboardText: FunctionComponent<Props> = ({
     [currentCoord, getTextBounds, startCoord],
   );
 
+  const keyedText = useMemo(() => {
+    const seen = new Map<string, number>();
+    return text.map((line) => {
+      const occurrence = (seen.get(line) ?? 0) + 1;
+      seen.set(line, occurrence);
+      return { line, key: `${line}-${occurrence}` };
+    });
+  }, [text]);
+
   return (
     <ArtboardBase
       onMouseDown={onMouseDown}
@@ -135,8 +141,8 @@ const ArtboardText: FunctionComponent<Props> = ({
           fontSize={`${fontSize}px`}
           alignmentBaseline="hanging"
         >
-          {text.map((line, i) => (
-            <tspan key={`${line}-${i}`} x={textBounds.x} dy={fontSize}>
+          {keyedText.map(({ line, key }) => (
+            <tspan key={key} x={textBounds.x} dy={fontSize}>
               {line}
             </tspan>
           ))}

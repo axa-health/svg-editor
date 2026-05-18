@@ -1,5 +1,5 @@
 import type { FunctionComponent } from 'react';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import Editor, { type Props as EditorProps } from '.';
 
 export type Props = Omit<

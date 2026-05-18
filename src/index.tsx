@@ -1,11 +1,10 @@
-import React from 'react';
-import App from './App';
 import { createRoot } from 'react-dom/client';
+import App from './App';
 
 const root = document.getElementById('root');
 
 if (root) {
   createRoot(root).render(<App />);
 } else {
-  alert('#root not found'); // eslint-disable-line
+  alert('#root not found');
 }

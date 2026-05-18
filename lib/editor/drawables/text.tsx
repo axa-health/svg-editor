@@ -1,5 +1,5 @@
 import type { CSSProperties, FunctionComponent, MouseEvent as ReactMouseEvent } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import DragIndicator from './drag-indicator';
 
 type Props = {
@@ -65,6 +65,15 @@ const TextDrawable: FunctionComponent<Props> = ({
     [canSelectDrawable],
   );
 
+  const keyedText = useMemo(() => {
+    const seen = new Map<string, number>();
+    return text.map((line) => {
+      const occurrence = (seen.get(line) ?? 0) + 1;
+      seen.set(line, occurrence);
+      return { line, key: `${line}-${occurrence}` };
+    });
+  }, [text]);
+
   if (text && !text.length) {
     return null;
   }
@@ -84,8 +93,8 @@ const TextDrawable: FunctionComponent<Props> = ({
         fill={fill}
         style={style}
       >
-        {text.map((line, i) => (
-          <tspan key={`${line}-${i}`} x={x} dy={fontSize}>
+        {keyedText.map(({ line, key }) => (
+          <tspan key={key} x={x} dy={fontSize}>
             {line}
           </tspan>
         ))}

@@ -1,11 +1,10 @@
 import type {
   CSSProperties,
   FunctionComponent,
-  MouseEvent as ReactMouseEvent,
   PropsWithChildren,
+  MouseEvent as ReactMouseEvent,
 } from 'react';
 import { useCallback } from 'react';
-import React from 'react';
 
 type Coords = { x: number; y: number };
 
@@ -34,7 +33,7 @@ const ArtboardBase: FunctionComponent<Props> = ({
       const svg = artboard.closest('svg');
 
       if (!svg) {
-        console.error('svg not found'); // eslint-disable-line no-console
+        console.error('svg not found');
         return;
       }
       const inverseMatrix = artboard.getScreenCTM()?.inverse();

@@ -1,8 +1,8 @@
+import type { FileTypeResult } from 'file-type';
+import { fileTypeFromBlob as fromBlob } from 'file-type';
+import type * as PdfJs from 'pdfjs-dist';
 import type { FunctionComponent, ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import type { FileTypeResult } from 'file-type';
-import { fromBlob } from 'file-type/browser';
-import type * as PdfJs from 'pdfjs-dist';
 
 type Source = string | Blob | URL;
 
@@ -43,7 +43,7 @@ const toBlob = (canvas: HTMLCanvasElement): Promise<Blob> =>
   });
 
 const defaultFetcher = async (url: string): Promise<Blob> => {
-  let res = await fetch(url);
+  const res = await fetch(url);
   return res.blob();
 };
 
@@ -80,6 +80,7 @@ const BackgroundSource: FunctionComponent<Props> = ({
       const renderContext = {
         canvasContext: context,
         viewport,
+        canvas,
       };
 
       await pdfPageProxy.render(renderContext).promise;
@@ -232,7 +233,7 @@ const BackgroundSource: FunctionComponent<Props> = ({
 
   useEffect(() => {
     updateSource(source, source);
-  }, [source, page, updateSource]);
+  }, [source, updateSource]);
 
   return children(sourceState);
 };
