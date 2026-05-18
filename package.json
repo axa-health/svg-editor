@@ -2,6 +2,14 @@
   "name": "@axah/react-svg-editor",
   "version": "2.0.5",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axa-health/svg-editor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/axa-health/svg-editor/issues"
+  },
+  "homepage": "https://github.com/axa-health/svg-editor#readme",
   "scripts": {
     "start": "vite",
     "release": "pnpm lint && pnpm check:types && pnpm build && pnpm changeset publish",
