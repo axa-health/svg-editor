@@ -1,5 +1,11 @@
 # @axah/react-svg-editor
 
+## 2.0.8
+
+### Patch Changes
+
+- a79f11d: Fix missing root exports by exposing `RenderProps` from `@axah/react-svg-editor`.
+
 ## 2.0.7
 
 ### Patch Changes
