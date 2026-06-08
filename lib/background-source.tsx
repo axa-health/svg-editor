@@ -3,6 +3,7 @@ import { fileTypeFromBlob as fromBlob } from 'file-type';
 import type * as PdfJs from 'pdfjs-dist';
 import type { FunctionComponent, ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
+import type {DocumentInitParameters} from "pdfjs-dist/types/src/display/api";
 
 type Source = string | Blob | URL;
 
@@ -28,6 +29,7 @@ export type RenderPropFunc = (source: RenderProps) => ReactNode;
 
 type Props = {
   source: Source;
+  documentInitParameters?: Omit<DocumentInitParameters, 'url' | 'data'>
   page?: number;
   hqPdf?: boolean;
   children: RenderPropFunc;
@@ -50,6 +52,7 @@ const defaultFetcher = async (url: string): Promise<Blob> => {
 const BackgroundSource: FunctionComponent<Props> = ({
   fetcher = defaultFetcher,
   source,
+  documentInitParameters,
   page,
   pdfjs,
   hqPdf,
@@ -64,7 +67,7 @@ const BackgroundSource: FunctionComponent<Props> = ({
       }
 
       const pdfjsToUse = await pdfjs();
-      const pdfDocumentProxy = await pdfjsToUse.getDocument(URL.createObjectURL(blob)).promise;
+      const pdfDocumentProxy = await pdfjsToUse.getDocument({ ...documentInitParameters, url: URL.createObjectURL(blob) }).promise;
       const pdfPageProxy = await pdfDocumentProxy.getPage(page);
       const viewport = pdfPageProxy.getViewport({ scale: zoom, rotation: 0 });
       const canvas = document.createElement('canvas');
