@@ -1,9 +1,9 @@
 import type { FileTypeResult } from 'file-type';
 import { fileTypeFromBlob as fromBlob } from 'file-type';
 import type * as PdfJs from 'pdfjs-dist';
+import type { DocumentInitParameters } from 'pdfjs-dist/types/src/display/api';
 import type { FunctionComponent, ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import type {DocumentInitParameters} from "pdfjs-dist/types/src/display/api";
 
 type Source = string | Blob | URL;
 
@@ -29,7 +29,7 @@ export type RenderPropFunc = (source: RenderProps) => ReactNode;
 
 type Props = {
   source: Source;
-  documentInitParameters?: Omit<DocumentInitParameters, 'url' | 'data'>
+  documentInitParameters?: Omit<DocumentInitParameters, 'url' | 'data'>;
   page?: number;
   hqPdf?: boolean;
   children: RenderPropFunc;
@@ -67,7 +67,10 @@ const BackgroundSource: FunctionComponent<Props> = ({
       }
 
       const pdfjsToUse = await pdfjs();
-      const pdfDocumentProxy = await pdfjsToUse.getDocument({ ...documentInitParameters, url: URL.createObjectURL(blob) }).promise;
+      const pdfDocumentProxy = await pdfjsToUse.getDocument({
+        ...documentInitParameters,
+        url: URL.createObjectURL(blob),
+      }).promise;
       const pdfPageProxy = await pdfDocumentProxy.getPage(page);
       const viewport = pdfPageProxy.getViewport({ scale: zoom, rotation: 0 });
       const canvas = document.createElement('canvas');
@@ -104,7 +107,7 @@ const BackgroundSource: FunctionComponent<Props> = ({
         height,
       };
     },
-    [pdfjs],
+    [pdfjs, documentInitParameters],
   );
 
   const updateSource = useCallback(
