@@ -1,5 +1,11 @@
 # @axah/react-svg-editor
 
+## 2.1.0
+
+### Minor Changes
+
+- 0f20f0d: Add new prop documentInitParameters to BackgroundSource, so options can be passed to the pdfjs.getDocument() call.
+
 ## 2.0.8
 
 ### Patch Changes
