@@ -72,7 +72,7 @@ const BackgroundSource: FunctionComponent<Props> = ({
         url: URL.createObjectURL(blob),
       }).promise;
       const pdfPageProxy = await pdfDocumentProxy.getPage(page);
-      const viewport = pdfPageProxy.getViewport({ scale: zoom, rotation: 0 });
+      const viewport = pdfPageProxy.getViewport({ scale: zoom });
       const canvas = document.createElement('canvas');
       canvas.height = viewport.height;
       canvas.width = viewport.width;
