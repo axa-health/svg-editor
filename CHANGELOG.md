@@ -1,5 +1,11 @@
 # @axah/react-svg-editor
 
+## 2.2.1
+
+### Patch Changes
+
+- 41adeae: Respect a PDF page's declared `/Rotate` when rendering the background. `BackgroundSource` no longer forces `rotation: 0`, so pages with `/Rotate 90` or `270` load upright like every other viewer instead of sideways.
+
 ## 2.2.0
 
 ### Minor Changes
